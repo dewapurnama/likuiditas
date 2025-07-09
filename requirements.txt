@@ -5,3 +5,4 @@ gspread_dataframe
 oauth2client
 openpyxl
 numpy
+gdown
