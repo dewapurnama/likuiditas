@@ -17,7 +17,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name('service_account.json',
 client = gs.authorize(creds)
 
 # === Target Sheet ===
-sheet_url = 'https://docs.google.com/spreadsheets/d/1hkNI_PPqhj0eeJwdMs7gvt8LPU7m8oA0/edit?gid=940687280'
+sheet_url = 'https://docs.google.com/spreadsheets/d/1hkNI_PPqhj0eeJwdMs7gvt8LPU7m8oA0'
 sheet = client.open_by_url(sheet_url)
 ws = sheet.worksheet("Sheet1")
 
