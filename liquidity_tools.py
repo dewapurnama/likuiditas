@@ -9,19 +9,19 @@ data = pd.DataFrame({
     "Total": [10000, 6000]
 })
 
-# Editable columns: Item, Qty, Price (Total will be auto-calculated)
+# User edits table
 edited_data = st.data_editor(
     data,
-    use_container_width=True,
     num_rows="dynamic",
+    use_container_width=True,
     column_config={
-        "Total": st.column_config.NumberColumn(disabled=True)  # Make Total read-only
+        "Total": st.column_config.NumberColumn(disabled=True)  # Read-only formula column
     }
 )
 
-# Calculate Total again, based on Qty and Price
+# Update Total with formula Qty * Price
 edited_data["Total"] = edited_data["Qty"].fillna(0) * edited_data["Price"].fillna(0)
 
-# Show the result
-st.write("Updated Data:")
-st.dataframe(edited_data)
+# Optional: show the updated result again
+# You can choose to hide this if you want one table only
+# st.dataframe(edited_data)
