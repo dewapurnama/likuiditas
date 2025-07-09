@@ -13,7 +13,7 @@ scope = [
     "https://www.googleapis.com/auth/drive"
 ]
 
-creds = ServiceAccountCredentials.from_json_keyfile_name('service_account.json', scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name('composite-depot-339307-43f9cf7a0301.json', scope)
 client = gs.authorize(creds)
 
 # === Target Sheet ===
