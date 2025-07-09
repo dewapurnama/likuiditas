@@ -18,7 +18,6 @@ edited_data = st.data_editor(
     df_drive,
     use_container_width=True,
     num_rows="dynamic"
-    }
 )
 
 # Show the result
