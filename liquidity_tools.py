@@ -1,12 +1,27 @@
-st.write("📝 Input your data below:")
-input_data = st.data_editor(
-    data.drop(columns=["Total"]),
+import streamlit as st
+import pandas as pd
+
+# Initial data
+data = pd.DataFrame({
+    "Item": ["Apple", "Banana"],
+    "Qty": [2, 3],
+    "Price": [5000, 2000],
+    "Total": [10000, 6000]
+})
+
+# Editable columns: Item, Qty, Price (Total will be auto-calculated)
+edited_data = st.data_editor(
+    data,
+    use_container_width=True,
     num_rows="dynamic",
-    use_container_width=True
+    column_config={
+        "Total": st.column_config.NumberColumn(disabled=True)  # Make Total read-only
+    }
 )
 
-# Calculate output
-input_data["Total"] = input_data["Qty"].fillna(0) * input_data["Price"].fillna(0)
+# Calculate Total again, based on Qty and Price
+edited_data["Total"] = edited_data["Qty"].fillna(0) * edited_data["Price"].fillna(0)
 
-st.write("📊 Auto-calculated result:")
-st.dataframe(input_data)
+# Show the result
+st.write("Updated Data:")
+st.dataframe(edited_data)
