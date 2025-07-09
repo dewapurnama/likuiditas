@@ -1,4 +1,7 @@
 streamlit
 pandas
-gdown
+gspread
+gspread_dataframe
+oauth2client
 openpyxl
+numpy
