@@ -2,6 +2,8 @@ import pandas as pd
 import streamlit as st
 import gdown
 
+st.set_page_config(layout="wide")
+
 # Download the file
 url = 'https://drive.google.com/uc?id=1jrbBbdiYlYUM3wF2-9r1MpMoBFcBRPgZ'
 output = 'Test_Likuid.xlsx'
