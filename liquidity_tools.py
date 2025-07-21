@@ -94,7 +94,7 @@ with tab0:
     month_options = [m.strftime('%b %Y') for m in months]
 
     with col_select:
-        selected_month_str = st.selectbox(
+        selected_month_str = st.selectbox("",
             month_options,
             index=month_options.index(default_month) if default_month in month_options else 0
         )
