@@ -57,7 +57,7 @@ with tab5:
     
 with tab0:
     # Ensure 'maturity date' is in datetime format
-    df_inv=df_edited_data_inv
+    df_inv=edited_data_inv
     df_inv['Maturity Date'] = pd.to_datetime(df_inv['Maturity Date'], errors='coerce')
     df_inv['Nominal'] = pd.to_numeric(df_inv['Nominal'], errors='coerce')
     
