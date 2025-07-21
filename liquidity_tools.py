@@ -4,6 +4,24 @@ import gdown
 
 st.set_page_config(layout="wide")
 
+tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs(["Likuiditas Wajib", "Solvabilitas", "Proyeksi LCR", "Maturity Profile", "Liquidity Gap"])
+
+tab0.markdown(
+    "<h1 style='font-size:25px;'>📊 Likuiditas Wajib BPKH</h1>",
+    unsafe_allow_html=True
+)
+
+with tab0:
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("🔥 Likuiditas Wajib", "2.02x BPIH", "25.47% YoY, 1.00% MoM", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+    with col2:
+        st.metric("📊 Investasi Jangka Pendek", "8,44 triliun", "", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+    with col3:
+        st.metric("🟣 Penempatan PIH Reguler", "28,97 triliun%", "", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+    with col4:
+        st.metric("📍 BPIH", "18,53 triliun", "-7,02% YoY", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+        
 # Download the file
 url = 'https://drive.google.com/uc?id=1jrbBbdiYlYUM3wF2-9r1MpMoBFcBRPgZ'
 output = 'Test_Likuid.xlsx'
