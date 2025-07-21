@@ -7,4 +7,3 @@ openpyxl
 numpy
 plotly.express
 gdown
-MonthEnd
