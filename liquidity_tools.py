@@ -200,8 +200,8 @@ with tab0:
             yaxis_title="Likuiditas Wajib",
             template="seaborn"
         )
-        fig.add_shape(type="line", x0=0, x1=1, y0=2, y1=2, xref='paper', yref='y', line=dict(color="#e49c27", width=2, dash="dot"))
-        fig.add_annotation(xref='paper', x=1, y=2, text="2x BPIH", showarrow=False, font=dict(color="#e49c27"), yshift=10)
+        fig.add_shape(type="line", x0=0, x1=1, y0=2, y1=2, xref='paper', yref='y', line=dict(color="red", width=2, dash="dot"))
+        fig.add_annotation(xref='paper', x=1, y=2, text="2x BPIH", showarrow=False, font=dict(color="red"), yshift=10)
     
         st.plotly_chart(fig, use_container_width=True)
 
