@@ -6,10 +6,18 @@ st.set_page_config(layout="wide")
 
 tab0, tab1, tab2, tab3, tab4 = st.tabs(["Likuiditas Wajib", "Solvabilitas", "Proyeksi LCR", "Maturity Profile", "Liquidity Gap"])
 
+# Download the file
+url = 'https://drive.google.com/uc?id=1x5Rjpzg7Z5TmVbbeORQLopMbEdShCzD_'
+output = 'Data Likuiditas.xlsx'
+gdown.download(url, output, quiet=False)
+
 tab0.markdown(
     "<h1 style='font-size:25px;'>📊 Likuiditas Wajib BPKH</h1>",
     unsafe_allow_html=True
 )
+
+with tab0:
+    df_drive = pd.read_excel(output, sheet_name="Investasi")
 
 with tab0:
     col1, col2, col3, col4 = st.columns(4)
@@ -21,35 +29,52 @@ with tab0:
         st.metric("🟣 Penempatan PIH Reguler", "28,97 triliun", "", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
     with col4:
         st.metric("📍 BPIH", "18,53 triliun", "-7,02% YoY", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
-        
+
+with tab0:
+    # Make the data editable with proper column config
+    edited_data = st.data_editor(
+        df_drive,
+        use_container_width=True,
+        num_rows="dynamic",
+        column_config={
+            "maturity date": st.column_config.DateColumn(
+                label="Maturity Date",
+                format="YYYY-MM-DD",
+                required=False
+            )
+        }
+    )
+    # Show the result
+    st.write("Updated Data:")
+    st.dataframe(edited_data)
 # Download the file
-url = 'https://drive.google.com/uc?id=1jrbBbdiYlYUM3wF2-9r1MpMoBFcBRPgZ'
-output = 'Test_Likuid.xlsx'
-gdown.download(url, output, quiet=False)
+#url = 'https://drive.google.com/uc?id=1jrbBbdiYlYUM3wF2-9r1MpMoBFcBRPgZ'
+#output = 'Test_Likuid.xlsx'
+#gdown.download(url, output, quiet=False)
 
 # Read the Excel file
-df_drive = pd.read_excel(output)
+#df_drive = pd.read_excel(output)
 
 # Clean 'maturity date' column
-if 'maturity date' in df_drive.columns:
-    df_drive['maturity date'] = pd.to_datetime(
-        df_drive['maturity date'], errors='coerce'
-    )  # 'n.a.' becomes NaT
+#if 'maturity date' in df_drive.columns:
+    #df_drive['maturity date'] = pd.to_datetime(
+        #df_drive['maturity date'], errors='coerce'
+    #)  # 'n.a.' becomes NaT
 
 # Make the data editable with proper column config
-edited_data = st.data_editor(
-    df_drive,
-    use_container_width=True,
-    num_rows="dynamic",
-    column_config={
-        "maturity date": st.column_config.DateColumn(
-            label="Maturity Date",
-            format="YYYY-MM-DD",
-            required=False
-        )
-    }
-)
+#edited_data = st.data_editor(
+    #df_drive,
+    #use_container_width=True,
+    #num_rows="dynamic",
+    #column_config={
+        #"maturity date": st.column_config.DateColumn(
+            #label="Maturity Date",
+            #format="YYYY-MM-DD",
+            #required=False
+        #)
+    #}
+#)
 
 # Show the result
-st.write("Updated Data:")
-st.dataframe(edited_data)
+#st.write("Updated Data:")
+#st.dataframe(edited_data)
