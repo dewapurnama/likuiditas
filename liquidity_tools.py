@@ -134,13 +134,17 @@ with tab0:
     today = pd.to_datetime("today").replace(day=1)
     default_month = (today + MonthEnd(0)).strftime('%b %Y')
     
-    # Month options
-    months = df_lik['Date'].dt.to_period('M').dropna().unique()
-    month_options = sorted([pd.Period(m, freq='M').strftime('%b %Y') for m in months])
+    # Month options: Jan–Dec 2025
+    months = pd.date_range(start='2025-01-01', end='2025-12-31', freq='M')
+    month_options = [m.strftime('%b %Y') for m in months]
     
     # Selectbox
     with col_select:
-        selected_month_str = st.selectbox("Pilih Bulan", month_options, index=month_options.index(default_month))
+        selected_month_str = st.selectbox(
+            "Pilih Bulan",
+            month_options,
+            index=month_options.index(default_month) if default_month in month_options else 0
+        )
     
     # Plot
     with col_plot:
