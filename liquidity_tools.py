@@ -146,7 +146,7 @@ with tab0:
         st.metric(
             "🔥 Likuiditas Wajib",
             f"{curr_liq:.2f}x BPIH" if curr_liq is not None else "-",
-            f"{calc_delta(curr_liq, prev_liq_y)} YoY / {calc_delta(curr_liq, prev_liq_m)} MoM",
+            f"{calc_delta(curr_liq, prev_liq_y)} YoY || {calc_delta(curr_liq, prev_liq_m)} MoM",
             border=True,
             help="Angka di atas bulan sekarang bersifat proyeksi",
             label_visibility="visible"
@@ -155,7 +155,7 @@ with tab0:
         st.metric(
             "📊 Investasi Jangka Pendek",
             format_tril(curr_inv),
-            f"{calc_delta(curr_inv, prev_inv_y)} YoY / {calc_delta(curr_inv, prev_inv_m)} MoM",
+            f"{calc_delta(curr_inv, prev_inv_y)} YoY || {calc_delta(curr_inv, prev_inv_m)} MoM",
             border=True,
             help="Angka di atas bulan sekarang bersifat proyeksi",
             label_visibility="visible"
@@ -164,7 +164,7 @@ with tab0:
         st.metric(
             "🟣 Penempatan PIH Reguler",
             format_tril(curr_pnp),
-            f"{calc_delta(curr_pnp, prev_pnp_y)} YoY / {calc_delta(curr_pnp, prev_pnp_m)} MoM",
+            f"{calc_delta(curr_pnp, prev_pnp_y)} YoY || {calc_delta(curr_pnp, prev_pnp_m)} MoM",
             border=True,
             help="Angka di atas bulan sekarang bersifat proyeksi",
             label_visibility="visible"
@@ -173,7 +173,7 @@ with tab0:
         st.metric(
             "📍 BPIH",
             format_tril(curr_bpih),
-            f"{calc_delta(curr_bpih, prev_bpih_y)} YoY / {calc_delta(curr_bpih, prev_bpih_m)} MoM",
+            f"{calc_delta(curr_bpih, prev_bpih_y)} YoY",
             border=True,
             help="Angka di atas bulan sekarang bersifat proyeksi",
             label_visibility="visible"
