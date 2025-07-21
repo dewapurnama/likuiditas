@@ -102,13 +102,7 @@ with tab0:
     prev_month = selected_date - MonthEnd(1)
     prev_year = selected_date - pd.DateOffset(years=1)
     prev_year = prev_year + MonthEnd(0)  # Normalize to EOM
-    
-    # 🔍 Debug
-    st.write("📅 Selected Month:", selected_date)
-    st.write("⬅️ Prev Month:", prev_month)
-    st.write("📄 Data for Prev Month:")
-    st.write(df_lik[df_lik['Date'] == prev_month])
-    
+
     # Get current & previous values
     def get_val(col, date):
         val = df_lik[df_lik['Date'] == date][col]
