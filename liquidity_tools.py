@@ -102,10 +102,6 @@ with tab0:
     prev_month = selected_date - MonthEnd(1)
     prev_year = selected_date - DateOffset(years=1)
     prev_year = prev_year + MonthEnd(0)  # Normalize to EOM
-
-    # Find previous dates
-    prev_month = selected_date - pd.DateOffset(months=1)
-    prev_year = selected_date - pd.DateOffset(years=1)
     
     # 🔍 Debug
     st.write("📅 Selected Month:", selected_date)
