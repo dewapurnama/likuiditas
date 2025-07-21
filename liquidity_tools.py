@@ -4,7 +4,7 @@ import gdown
 
 st.set_page_config(layout="wide")
 
-tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs(["Likuiditas Wajib", "Solvabilitas", "Proyeksi LCR", "Maturity Profile", "Liquidity Gap"])
+tab0, tab1, tab2, tab3, tab4 = st.tabs(["Likuiditas Wajib", "Solvabilitas", "Proyeksi LCR", "Maturity Profile", "Liquidity Gap"])
 
 tab0.markdown(
     "<h1 style='font-size:25px;'>📊 Likuiditas Wajib BPKH</h1>",
