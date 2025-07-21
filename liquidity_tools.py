@@ -63,6 +63,14 @@ with tab0:
     # Create summary DataFrame
     df_short_term_nominal = pd.DataFrame(results)
     df_short_term_nominal['Date'] = pd.to_datetime(df_short_term_nominal['Date'])
+
+    edited_data_pnp = st.data_editor(
+        df_pnp,
+        use_container_width=True,
+        num_rows="dynamic",
+    )
+
+    df_pnp=edited_data_pnp
     
     df_lik = pd.merge(pd.merge(df_short_term_nominal, df_pnp, on='Date', how='outer'), df_bpih, on='Date', how='outer')
     
@@ -150,11 +158,11 @@ with tab0:
     st.dataframe(edited_data_inv)
 
     # Make the data editable with proper column config
-    edited_data_pnp = st.data_editor(
-        df_pnp,
-        use_container_width=True,
-        num_rows="dynamic",
-    )
+    #edited_data_pnp = st.data_editor(
+        #df_pnp,
+        #use_container_width=True,
+        #num_rows="dynamic",
+    #)
     # Show the result
     st.write("Update Data Penempatan:")
     st.dataframe(edited_data_pnp)
