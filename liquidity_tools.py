@@ -63,7 +63,6 @@ with tab0:
     # Create summary DataFrame
     df_short_term_nominal = pd.DataFrame(results)
     df_short_term_nominal['Date'] = pd.to_datetime(df_short_term_nominal['Date'])
-    df_short_term_nominal
     
     df_lik = pd.merge(pd.merge(df_short_term_nominal, df_pnp, on='Date', how='outer'), df_bpih, on='Date', how='outer')
     
