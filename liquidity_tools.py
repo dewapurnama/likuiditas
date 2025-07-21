@@ -103,59 +103,67 @@ with tab0:
     # Sort by date
     df_lik = df_lik.sort_values('Date')
     
-    # Create chart
-    fig = px.bar(
-        df_lik,
-        x='Month',
-        y='liquidity',
-        text='liquidity'
-    )
+    def plot_liquidity_by_month(end_month_str):
+        end_date = pd.to_datetime(end_month_str) + MonthEnd(0)
+        start_date = end_date - pd.DateOffset(months=13) + pd.offsets.MonthBegin(0)
     
-    fig.update_traces(
-        texttemplate='%{text:.2f}',
-        textposition='outside'
-    )
+        df_lik['Date'] = pd.to_datetime(df_lik['Date'])
     
-    fig.update_layout(
-        title=dict(
-            text="Likuiditas Wajib (x BPIH)", x=0.5, xanchor='center', font=dict(size=18)
-        ),
-        xaxis=dict(
-            title="Bulan",
-            tickangle=-30
-        ),
-        yaxis_title="Likuiditas Wajib",
-        template="seaborn"
-    )
+        df_filtered = df_lik[(df_lik['Date'] >= start_date) & (df_lik['Date'] <= end_date)].copy()
     
-    # Add dotted line at y = 2
-    fig.add_shape(
-        type="line",
-        x0=0,
-        x1=1,
-        y0=2,
-        y1=2,
-        xref='paper',
-        yref='y',
-        line=dict(
-            color="red",
-            width=2,
-            dash="dot"
+        df_filtered['Month'] = df_filtered['Date'].dt.strftime('%b %Y')
+        df_filtered['liquidity'] = (df_filtered['Short-Term Inv Nominal'] + df_filtered['Penempatan']) / df_filtered['BPIH']
+        df_filtered = df_filtered.sort_values('Date')
+    
+        fig = px.bar(
+            df_filtered,
+            x='Month',
+            y='liquidity',
+            text='liquidity'
         )
-    )
     
-    # Add annotation for the line
-    fig.add_annotation(
-        xref='paper',
-        x=1,
-        y=2,
-        xanchor='left',
-        text="2x BPIH",
-        showarrow=False,
-        font=dict(color="red"),
-        yshift=10
-    )
-    st.plotly_chart(fig, use_container_width=True, height=200)
+        fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+        fig.update_layout(
+            title=dict(text="Likuiditas Wajib (x BPIH)", x=0.5, xanchor='center', font=dict(size=18)),
+            xaxis=dict(title="Bulan", tickangle=-30),
+            yaxis_title="Likuiditas Wajib",
+            template="seaborn"
+        )
+    
+        fig.add_shape(
+            type="line",
+            x0=0, x1=1,
+            y0=2, y1=2,
+            xref='paper',
+            yref='y',
+            line=dict(color="red", width=2, dash="dot")
+        )
+    
+        fig.add_annotation(
+            xref='paper',
+            x=1,
+            y=2,
+            xanchor='left',
+            text="2x BPIH",
+            showarrow=False,
+            font=dict(color="red"),
+            yshift=10
+        )
+    
+        st.plotly_chart(fig, use_container_width=True)
+        # Generate month list from your data
+        available_months = pd.to_datetime(df_lik['Date'].dropna().unique()).to_series().dt.to_period('M').drop_duplicates()
+        month_options = sorted(available_months.dt.strftime('%b %Y').unique())
+        
+        # Let user select a month
+        selected_month_str = st.selectbox("Pilih Bulan Akhir (untuk melihat 12 bulan sebelumnya)", month_options)
+        
+        # Convert to format like '2025-06'
+        selected_month_datetime = pd.to_datetime(selected_month_str)
+        selected_month_formatted = selected_month_datetime.strftime('%Y-%m')
+        
+        # Plot
+        plot_liquidity_by_month(selected_month_formatted)
 
 # Download the file
 #url = 'https://drive.google.com/uc?id=1jrbBbdiYlYUM3wF2-9r1MpMoBFcBRPgZ'
