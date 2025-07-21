@@ -100,7 +100,7 @@ with tab0:
 
     # Find previous dates
     prev_month = selected_date - MonthEnd(1)
-    prev_year = selected_date - DateOffset(years=1)
+    prev_year = selected_date - pd.DateOffset(years=1)
     prev_year = prev_year + MonthEnd(0)  # Normalize to EOM
     
     # 🔍 Debug
