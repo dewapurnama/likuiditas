@@ -43,9 +43,13 @@ with tab5:
         df_pnp,
         use_container_width=True,
         num_rows="dynamic",
-        column_config={
-        "Penempatan": st.column_config.NumberColumn(format="%.2f"),
-    }
+    )
+
+    st.write("Update Data BPIH:")
+    edited_data_pnp = st.data_editor(
+        df_bpih,
+        use_container_width=True,
+        num_rows="dynamic",
     )
     
 with tab0:
@@ -90,7 +94,6 @@ with tab0:
 
     with col_select:
         selected_month_str = st.selectbox(
-            "Pilih Bulan",
             month_options,
             index=month_options.index(default_month) if default_month in month_options else 0
         )
