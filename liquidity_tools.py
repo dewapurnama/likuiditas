@@ -23,17 +23,6 @@ with tab0:
     df_pnp = pd.read_excel(output, sheet_name="Penempatan")
     df_bpih = pd.read_excel(output, sheet_name="BPIH")
 
-with tab0:
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("🔥 Likuiditas Wajib", "2.02x BPIH", "25.47% YoY, -1.00% MoM", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
-    with col2:
-        st.metric("📊 Investasi Jangka Pendek", "8,44 triliun", "", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
-    with col3:
-        st.metric("🟣 Penempatan PIH Reguler", "28,97 triliun", "", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
-    with col4:
-        st.metric("📍 BPIH", "18,53 triliun", "-7,02% YoY", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
-
 with tab5:
     st.write("Update Data Investasi:")
     edited_data_inv = st.data_editor(
@@ -55,6 +44,38 @@ with tab5:
         use_container_width=True,
         num_rows="dynamic",
     )
+    
+with tab0:
+    # Layout: 1/4 for selectbox, 3/4 for plot
+    col_select, col_empty = st.columns([1, 3])
+    # Default: this month's end
+    today = pd.to_datetime("today").replace(day=1)
+    default_month = (today + MonthEnd(0)).strftime('%b %Y')
+    
+    # Month options: Jan–Dec 2025
+    months = pd.date_range(start='2025-01-01', end='2025-12-31', freq='M')
+    month_options = [m.strftime('%b %Y') for m in months]
+    
+    # Selectbox
+    with col_select:
+        selected_month_str = st.selectbox(
+            "Pilih Bulan",
+            month_options,
+            index=month_options.index(default_month) if default_month in month_options else 0
+        )
+
+    with col_empty:
+        st.empty()
+    
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("🔥 Likuiditas Wajib", "2.02x BPIH", "25.47% YoY, -1.00% MoM", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+    with col2:
+        st.metric("📊 Investasi Jangka Pendek", "8,44 triliun", "", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+    with col3:
+        st.metric("🟣 Penempatan PIH Reguler", "28,97 triliun", "", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+    with col4:
+        st.metric("📍 BPIH", "18,53 triliun", "-7,02% YoY", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
     
 with tab0:
     # Ensure 'maturity date' is in datetime format
@@ -128,28 +149,28 @@ with tab0:
         st.plotly_chart(fig, use_container_width=True)
 
     # Layout: 1/4 for selectbox, 3/4 for plot
-    col_select, col_plot = st.columns([1, 3])
+    #col_select, col_plot = st.columns([1, 3])
     
     # Default: this month's end
-    today = pd.to_datetime("today").replace(day=1)
-    default_month = (today + MonthEnd(0)).strftime('%b %Y')
+    #today = pd.to_datetime("today").replace(day=1)
+    #default_month = (today + MonthEnd(0)).strftime('%b %Y')
     
     # Month options: Jan–Dec 2025
-    months = pd.date_range(start='2025-01-01', end='2025-12-31', freq='M')
-    month_options = [m.strftime('%b %Y') for m in months]
+    #months = pd.date_range(start='2025-01-01', end='2025-12-31', freq='M')
+    #month_options = [m.strftime('%b %Y') for m in months]
     
     # Selectbox
-    with col_select:
-        selected_month_str = st.selectbox(
-            "Pilih Bulan",
-            month_options,
-            index=month_options.index(default_month) if default_month in month_options else 0
-        )
+    #with col_select:
+        #selected_month_str = st.selectbox(
+            #"Pilih Bulan",
+            #month_options,
+            #index=month_options.index(default_month) if default_month in month_options else 0
+        #)
     
     # Plot
-    with col_plot:
-        selected_month = pd.to_datetime(selected_month_str).strftime('%Y-%m')
-        plot_liquidity_by_month(selected_month)
+    #with col_plot:
+    selected_month = pd.to_datetime(selected_month_str).strftime('%Y-%m')
+    plot_liquidity_by_month(selected_month)
 
 # Download the file
 #url = 'https://drive.google.com/uc?id=1jrbBbdiYlYUM3wF2-9r1MpMoBFcBRPgZ'
