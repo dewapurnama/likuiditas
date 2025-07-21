@@ -108,62 +108,43 @@ with tab0:
         start_date = end_date - pd.DateOffset(months=13) + pd.offsets.MonthBegin(0)
     
         df_lik['Date'] = pd.to_datetime(df_lik['Date'])
-    
         df_filtered = df_lik[(df_lik['Date'] >= start_date) & (df_lik['Date'] <= end_date)].copy()
-    
         df_filtered['Month'] = df_filtered['Date'].dt.strftime('%b %Y')
         df_filtered['liquidity'] = (df_filtered['Short-Term Inv Nominal'] + df_filtered['Penempatan']) / df_filtered['BPIH']
         df_filtered = df_filtered.sort_values('Date')
     
-        fig = px.bar(
-            df_filtered,
-            x='Month',
-            y='liquidity',
-            text='liquidity'
-        )
-    
+        fig = px.bar(df_filtered, x='Month', y='liquidity', text='liquidity')
         fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
         fig.update_layout(
-            title=dict(text="Likuiditas Wajib (x BPIH)", x=0.5, xanchor='center', font=dict(size=18)),
-            xaxis=dict(title="Bulan", tickangle=-30),
+            title="Likuiditas Wajib (x BPIH)",
+            xaxis_title="Bulan",
             yaxis_title="Likuiditas Wajib",
             template="seaborn"
         )
-    
-        fig.add_shape(
-            type="line",
-            x0=0, x1=1,
-            y0=2, y1=2,
-            xref='paper',
-            yref='y',
-            line=dict(color="red", width=2, dash="dot")
-        )
-    
-        fig.add_annotation(
-            xref='paper',
-            x=1,
-            y=2,
-            xanchor='left',
-            text="2x BPIH",
-            showarrow=False,
-            font=dict(color="red"),
-            yshift=10
-        )
+        fig.add_shape(type="line", x0=0, x1=1, y0=2, y1=2, xref='paper', yref='y', line=dict(color="red", width=2, dash="dot"))
+        fig.add_annotation(xref='paper', x=1, y=2, text="2x BPIH", showarrow=False, font=dict(color="red"), yshift=10)
     
         st.plotly_chart(fig, use_container_width=True)
-        # Generate month list from your data
-        available_months = pd.to_datetime(df_lik['Date'].dropna().unique()).to_series().dt.to_period('M').drop_duplicates()
-        month_options = sorted(available_months.dt.strftime('%b %Y').unique())
-        
-        # Let user select a month
-        selected_month_str = st.selectbox("Pilih Bulan Akhir (untuk melihat 12 bulan sebelumnya)", month_options)
-        
-        # Convert to format like '2025-06'
-        selected_month_datetime = pd.to_datetime(selected_month_str)
-        selected_month_formatted = selected_month_datetime.strftime('%Y-%m')
-        
-        # Plot
-        plot_liquidity_by_month(selected_month_formatted)
+
+    # Layout: 1/4 for selectbox, 3/4 for plot
+    col_select, col_plot = st.columns([1, 3])
+    
+    # Default: this month's end
+    today = pd.to_datetime("today").replace(day=1)
+    default_month = (today + MonthEnd(0)).strftime('%b %Y')
+    
+    # Month options
+    months = df_lik['Date'].dt.to_period('M').dropna().unique()
+    month_options = sorted([pd.Period(m, freq='M').strftime('%b %Y') for m in months])
+    
+    # Selectbox
+    with col_select:
+        selected_month_str = st.selectbox("Pilih Bulan", month_options, index=month_options.index(default_month))
+    
+    # Plot
+    with col_plot:
+        selected_month = pd.to_datetime(selected_month_str).strftime('%Y-%m')
+        plot_liquidity_by_month(selected_month)
 
 # Download the file
 #url = 'https://drive.google.com/uc?id=1jrbBbdiYlYUM3wF2-9r1MpMoBFcBRPgZ'
