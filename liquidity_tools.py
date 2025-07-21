@@ -5,7 +5,7 @@ import gdown
 
 st.set_page_config(layout="wide")
 
-tab0, tab1, tab2, tab3, tab4 = st.tabs(["Likuiditas Wajib", "Solvabilitas", "Proyeksi LCR", "Maturity Profile", "Liquidity Gap"])
+tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs(["Likuiditas Wajib", "Solvabilitas", "Proyeksi LCR", "Maturity Profile", "Liquidity Gap", "Data"])
 
 # Download the file
 url = 'https://drive.google.com/uc?id=1x5Rjpzg7Z5TmVbbeORQLopMbEdShCzD_'
@@ -33,6 +33,13 @@ with tab0:
     with col4:
         st.metric("📍 BPIH", "18,53 triliun", "-7,02% YoY", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
 
+with tab5:
+    edited_data_pnp = st.data_editor(
+        df_pnp,
+        use_container_width=True,
+        num_rows="dynamic",
+    )
+    
 with tab0:
     # Ensure 'maturity date' is in datetime format
     df_inv['Maturity Date'] = pd.to_datetime(df_inv['Maturity Date'], errors='coerce')
@@ -63,12 +70,6 @@ with tab0:
     # Create summary DataFrame
     df_short_term_nominal = pd.DataFrame(results)
     df_short_term_nominal['Date'] = pd.to_datetime(df_short_term_nominal['Date'])
-
-    edited_data_pnp = st.data_editor(
-        df_pnp,
-        use_container_width=True,
-        num_rows="dynamic",
-    )
 
     df_pnp=edited_data_pnp
     
