@@ -46,7 +46,7 @@ with tab5:
     )
 
     st.write("Update Data BPIH:")
-    edited_data_pnp = st.data_editor(
+    edited_data_bpih = st.data_editor(
         df_bpih,
         use_container_width=True,
         num_rows="dynamic",
@@ -55,6 +55,7 @@ with tab5:
 with tab0:
     # === Prepare Data ===
     df_inv = edited_data_inv
+    df_bpih = edited_data_bpih
     df_inv['Maturity Date'] = pd.to_datetime(df_inv['Maturity Date'], errors='coerce')
     df_inv['Nominal'] = pd.to_numeric(df_inv['Nominal'], errors='coerce')
 
