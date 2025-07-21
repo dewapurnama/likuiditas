@@ -99,8 +99,9 @@ with tab0:
     row = df_lik[df_lik['Date'] == selected_date]
 
     # Find previous dates
-    prev_month = selected_date - pd.DateOffset(months=1)
-    prev_year = selected_date - pd.DateOffset(years=1)
+    prev_month = selected_date - MonthEnd(1)
+    prev_year = selected_date - DateOffset(years=1)
+    prev_year = prev_year + MonthEnd(0)  # Normalize to EOM
 
     # Find previous dates
     prev_month = selected_date - pd.DateOffset(months=1)
