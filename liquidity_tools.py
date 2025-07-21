@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import plotly.express as px
 import gdown
 
 st.set_page_config(layout="wide")
