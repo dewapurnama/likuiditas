@@ -158,6 +158,7 @@ with tab0:
     # Show the result
     st.write("Update Data Penempatan:")
     st.dataframe(edited_data_pnp)
+    df_pnp=edited_data_pnp
 
 # Download the file
 #url = 'https://drive.google.com/uc?id=1jrbBbdiYlYUM3wF2-9r1MpMoBFcBRPgZ'
