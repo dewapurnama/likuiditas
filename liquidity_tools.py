@@ -46,83 +46,85 @@ with tab5:
     )
     
 with tab0:
-    # Ensure 'maturity date' is in datetime format
-    df_inv=edited_data_inv
+    # === Prepare Data ===
+    df_inv = edited_data_inv
     df_inv['Maturity Date'] = pd.to_datetime(df_inv['Maturity Date'], errors='coerce')
     df_inv['Nominal'] = pd.to_numeric(df_inv['Nominal'], errors='coerce')
-    
-    # Filter only rows where 'sumber dana' is "PIH Reguler"
+
     df_filtered = df_inv[df_inv['Sumber Dana'] == 'PIH Reguler']
-    
-    # Define month range as EOM at 23:59:59
+
     months = pd.date_range(start='2024-01-01', end='2025-12-31', freq='M')
-    
-    # Collect results
     results = []
-    
     for month in months:
         one_year_later = month + pd.DateOffset(years=1)
-    
         total_nominal = df_filtered[
             (df_filtered['Maturity Date'] >= month) &
             (df_filtered['Maturity Date'] <= one_year_later)
         ]['Nominal'].sum()
-    
         results.append({
             'Date': month.strftime('%Y-%m-%d'),
             'Short-Term Inv Nominal': total_nominal
         })
-    
-    # Create summary DataFrame
+
     df_short_term_nominal = pd.DataFrame(results)
     df_short_term_nominal['Date'] = pd.to_datetime(df_short_term_nominal['Date'])
 
-    df_pnp=edited_data_pnp
-    
+    df_pnp = edited_data_pnp
     df_lik = pd.merge(pd.merge(df_short_term_nominal, df_pnp, on='Date', how='outer'), df_bpih, on='Date', how='outer')
-    
-    # Ensure datetime
+
     df_lik['Date'] = pd.to_datetime(df_lik['Date'])
-    
-    # Format for display
-    df_lik['Month'] = df_lik['Date'].dt.strftime('%b %Y')  # e.g., Jan 2024
-    
-    # Calculate liquidity
+    df_lik['Month'] = df_lik['Date'].dt.strftime('%b %Y')
     df_lik['liquidity'] = (df_lik['Short-Term Inv Nominal'] + df_lik['Penempatan']) / df_lik['BPIH']
-    
-    # Sort by date
     df_lik = df_lik.sort_values('Date')
-    
-    # Layout: 1/4 for selectbox, 3/4 for plot
+
+    # === Select Month ===
     col_select, col_empty = st.columns([1, 3])
-    # Default: this month's end
     today = pd.to_datetime("today").replace(day=1)
     default_month = (today + MonthEnd(0)).strftime('%b %Y')
-    
-    # Month options: Jan–Dec 2025
+
     months = pd.date_range(start='2025-01-01', end='2025-12-31', freq='M')
     month_options = [m.strftime('%b %Y') for m in months]
-    
-    # Selectbox
+
     with col_select:
         selected_month_str = st.selectbox(
             "Pilih Bulan",
             month_options,
             index=month_options.index(default_month) if default_month in month_options else 0
         )
-
     with col_empty:
         st.empty()
-    
+
+    # === Extract Metrics for Selected Month ===
+    selected_date = pd.to_datetime(selected_month_str)
+    row = df_lik[df_lik['Date'] == selected_date]
+
+    # Graceful fallback if not found
+    def format_tril(value):
+        return f"{value / 1e12:.2f} triliun" if pd.notnull(value) else "-"
+
+    curr_liq = row['liquidity'].values[0] if not row.empty else None
+    curr_inv = row['Short-Term Inv Nominal'].values[0] if not row.empty else None
+    curr_pnp = row['Penempatan'].values[0] if not row.empty else None
+    curr_bpih = row['BPIH'].values[0] if not row.empty else None
+
+    # === Show Metrics ===
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("🔥 Likuiditas Wajib", "2.02x BPIH", "25.47% YoY, -1.00% MoM", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+        st.metric("🔥 Likuiditas Wajib", f"{curr_liq:.2f}x BPIH" if curr_liq is not None else "-",
+                  help="Angka di atas bulan sekarang bersifat proyeksi",
+                  label_visibility="visible", border=True)
     with col2:
-        st.metric("📊 Investasi Jangka Pendek", "8,44 triliun", "", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+        st.metric("📊 Investasi Jangka Pendek", format_tril(curr_inv),
+                  help="Angka di atas bulan sekarang bersifat proyeksi",
+                  label_visibility="visible", border=True)
     with col3:
-        st.metric("🟣 Penempatan PIH Reguler", "28,97 triliun", "", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+        st.metric("🟣 Penempatan PIH Reguler", format_tril(curr_pnp),
+                  help="Angka di atas bulan sekarang bersifat proyeksi",
+                  label_visibility="visible", border=True)
     with col4:
-        st.metric("📍 BPIH", "18,53 triliun", "-7,02% YoY", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+        st.metric("📍 BPIH", format_tril(curr_bpih),
+                  help="Angka di atas bulan sekarang bersifat proyeksi",
+                  label_visibility="visible", border=True)
     
 with tab0:
     def plot_liquidity_by_month(end_month_str):
