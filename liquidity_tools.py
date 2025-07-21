@@ -43,6 +43,9 @@ with tab5:
         df_pnp,
         use_container_width=True,
         num_rows="dynamic",
+        column_config={
+        "Penempatan": st.column_config.NumberColumn(format="%.2f"),
+    }
     )
     
 with tab0:
