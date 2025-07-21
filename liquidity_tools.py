@@ -98,33 +98,80 @@ with tab0:
     selected_date = pd.to_datetime(selected_month_str) + MonthEnd(0)
     row = df_lik[df_lik['Date'] == selected_date]
 
-    # Graceful fallback if not found
-    def format_tril(value):
-        return f"{value / 1e12:.2f} triliun" if pd.notnull(value) else "-"
-
-    curr_liq = row['liquidity'].values[0] if not row.empty else None
-    curr_inv = row['Short-Term Inv Nominal'].values[0] if not row.empty else None
-    curr_pnp = row['Penempatan'].values[0] if not row.empty else None
-    curr_bpih = row['BPIH'].values[0] if not row.empty else None
-
-    # === Show Metrics ===
+    # Find previous dates
+    prev_month = selected_date - pd.DateOffset(months=1)
+    prev_year = selected_date - pd.DateOffset(years=1)
+    
+    # Get current & previous values
+    def get_val(col, date):
+        val = df_lik[df_lik['Date'] == date][col]
+        return val.values[0] if not val.empty and pd.notnull(val.values[0]) else None
+    
+    # Current values
+    curr_liq = get_val('liquidity', selected_date)
+    curr_inv = get_val('Short-Term Inv Nominal', selected_date)
+    curr_pnp = get_val('Penempatan', selected_date)
+    curr_bpih = get_val('BPIH', selected_date)
+    
+    # Previous values
+    prev_liq_m = get_val('liquidity', prev_month)
+    prev_liq_y = get_val('liquidity', prev_year)
+    prev_inv_m = get_val('Short-Term Inv Nominal', prev_month)
+    prev_inv_y = get_val('Short-Term Inv Nominal', prev_year)
+    prev_pnp_m = get_val('Penempatan', prev_month)
+    prev_pnp_y = get_val('Penempatan', prev_year)
+    prev_bpih_m = get_val('BPIH', prev_month)
+    prev_bpih_y = get_val('BPIH', prev_year)
+    
+    # Format delta
+    def calc_delta(curr, prev):
+        if curr is None or prev is None or prev == 0:
+            return "-"
+        return f"{(curr - prev) / prev * 100:.2f}%"
+    
+    # Format trillions
+    def format_tril(val):
+        return f"{val / 1e12:.2f} triliun" if val is not None else "-"
+    
+    # Show metrics
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("🔥 Likuiditas Wajib", f"{curr_liq:.2f}x BPIH" if curr_liq is not None else "-",
-                  help="Angka di atas bulan sekarang bersifat proyeksi",
-                  label_visibility="visible", border=True)
+        st.metric(
+            "🔥 Likuiditas Wajib",
+            f"{curr_liq:.2f}x BPIH" if curr_liq is not None else "-",
+            f"{calc_delta(curr_liq, prev_liq_y)} YoY / {calc_delta(curr_liq, prev_liq_m)} MoM",
+            border=True,
+            help="Angka di atas bulan sekarang bersifat proyeksi",
+            label_visibility="visible"
+        )
     with col2:
-        st.metric("📊 Investasi Jangka Pendek", format_tril(curr_inv),
-                  help="Angka di atas bulan sekarang bersifat proyeksi",
-                  label_visibility="visible", border=True)
+        st.metric(
+            "📊 Investasi Jangka Pendek",
+            format_tril(curr_inv),
+            f"{calc_delta(curr_inv, prev_inv_y)} YoY / {calc_delta(curr_inv, prev_inv_m)} MoM",
+            border=True,
+            help="Angka di atas bulan sekarang bersifat proyeksi",
+            label_visibility="visible"
+        )
     with col3:
-        st.metric("🟣 Penempatan PIH Reguler", format_tril(curr_pnp),
-                  help="Angka di atas bulan sekarang bersifat proyeksi",
-                  label_visibility="visible", border=True)
+        st.metric(
+            "🟣 Penempatan PIH Reguler",
+            format_tril(curr_pnp),
+            f"{calc_delta(curr_pnp, prev_pnp_y)} YoY / {calc_delta(curr_pnp, prev_pnp_m)} MoM",
+            border=True,
+            help="Angka di atas bulan sekarang bersifat proyeksi",
+            label_visibility="visible"
+        )
     with col4:
-        st.metric("📍 BPIH", format_tril(curr_bpih),
-                  help="Angka di atas bulan sekarang bersifat proyeksi",
-                  label_visibility="visible", border=True)
+        st.metric(
+            "📍 BPIH",
+            format_tril(curr_bpih),
+            f"{calc_delta(curr_bpih, prev_bpih_y)} YoY / {calc_delta(curr_bpih, prev_bpih_m)} MoM",
+            border=True,
+            help="Angka di atas bulan sekarang bersifat proyeksi",
+            label_visibility="visible"
+        )
+
     
 with tab0:
     def plot_liquidity_by_month(end_month_str):
