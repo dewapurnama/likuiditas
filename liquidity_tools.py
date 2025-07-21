@@ -34,6 +34,21 @@ with tab0:
         st.metric("📍 BPIH", "18,53 triliun", "-7,02% YoY", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
 
 with tab5:
+    st.write("Update Data Investasi:")
+    edited_data_inv = st.data_editor(
+        df_inv,
+        use_container_width=True,
+        num_rows="dynamic",
+        column_config={
+            "maturity date": st.column_config.DateColumn(
+                label="Maturity Date",
+                format="YYYY-MM-DD",
+                required=False
+            )
+        }
+    )
+
+    st.write("Update Data Penempatan:")
     edited_data_pnp = st.data_editor(
         df_pnp,
         use_container_width=True,
@@ -42,6 +57,7 @@ with tab5:
     
 with tab0:
     # Ensure 'maturity date' is in datetime format
+    df_inv=df_edited_data_inv
     df_inv['Maturity Date'] = pd.to_datetime(df_inv['Maturity Date'], errors='coerce')
     df_inv['Nominal'] = pd.to_numeric(df_inv['Nominal'], errors='coerce')
     
@@ -140,34 +156,6 @@ with tab0:
         yshift=10
     )
     st.plotly_chart(fig, use_container_width=True, height=200)
-
-    # Make the data editable with proper column config
-    edited_data_inv = st.data_editor(
-        df_inv,
-        use_container_width=True,
-        num_rows="dynamic",
-        column_config={
-            "maturity date": st.column_config.DateColumn(
-                label="Maturity Date",
-                format="YYYY-MM-DD",
-                required=False
-            )
-        }
-    )
-    # Show the result
-    st.write("Update Data Investasi:")
-    st.dataframe(edited_data_inv)
-
-    # Make the data editable with proper column config
-    #edited_data_pnp = st.data_editor(
-        #df_pnp,
-        #use_container_width=True,
-        #num_rows="dynamic",
-    #)
-    # Show the result
-    st.write("Update Data Penempatan:")
-    st.dataframe(edited_data_pnp)
-    df_pnp=edited_data_pnp
 
 # Download the file
 #url = 'https://drive.google.com/uc?id=1jrbBbdiYlYUM3wF2-9r1MpMoBFcBRPgZ'
