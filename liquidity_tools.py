@@ -95,7 +95,7 @@ with tab0:
         st.empty()
 
     # === Extract Metrics for Selected Month ===
-    selected_date = pd.to_datetime(selected_month_str)
+    selected_date = pd.to_datetime(selected_month_str) + MonthEnd(0)
     row = df_lik[df_lik['Date'] == selected_date]
 
     # Graceful fallback if not found
