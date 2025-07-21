@@ -17,7 +17,9 @@ tab0.markdown(
 )
 
 with tab0:
-    df_drive = pd.read_excel(output, sheet_name="Investasi")
+    df_inv = pd.read_excel(output, sheet_name="Investasi")
+    df_pnp = pd.read_excel(output, sheet_name="Penempatan")
+    df_bpih = pd.read_excel(output, sheet_name="BPIH")
 
 with tab0:
     col1, col2, col3, col4 = st.columns(4)
@@ -31,9 +33,108 @@ with tab0:
         st.metric("📍 BPIH", "18,53 triliun", "-7,02% YoY", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
 
 with tab0:
+    # Ensure 'maturity date' is in datetime format
+    df_inv['Maturity Date'] = pd.to_datetime(df_inv['Maturity Date'], errors='coerce')
+    df_inv['Nominal'] = pd.to_numeric(df_inv['Nominal'], errors='coerce')
+    
+    # Filter only rows where 'sumber dana' is "PIH Reguler"
+    df_filtered = df_inv[df_inv['Sumber Dana'] == 'PIH Reguler']
+    
+    # Define month range as EOM at 23:59:59
+    months = pd.date_range(start='2024-01-01', end='2025-12-31', freq='M')
+    
+    # Collect results
+    results = []
+    
+    for month in months:
+        one_year_later = month + pd.DateOffset(years=1)
+    
+        total_nominal = df_filtered[
+            (df_filtered['Maturity Date'] >= month) &
+            (df_filtered['Maturity Date'] <= one_year_later)
+        ]['Nominal'].sum()
+    
+        results.append({
+            'Date': month.strftime('%Y-%m-%d'),
+            'Short-Term Inv Nominal': total_nominal
+        })
+    
+    # Create summary DataFrame
+    df_short_term_nominal = pd.DataFrame(results)
+    df_short_term_nominal['Date'] = pd.to_datetime(df_short_term_nominal['Date'])
+    df_short_term_nominal
+    
+    df_lik = pd.merge(pd.merge(df_short_term_nominal, df_pnp, on='Date', how='outer'), df_bpih, on='Date', how='outer')
+    
+    # Ensure datetime
+    df_lik['Date'] = pd.to_datetime(df_lik['Date'])
+    
+    # Format for display
+    df_lik['Month'] = df_lik['Date'].dt.strftime('%b %Y')  # e.g., Jan 2024
+    
+    # Calculate liquidity
+    df_lik['liquidity'] = (df_lik['Short-Term Inv Nominal'] + df_lik['Penempatan']) / df_lik['BPIH']
+    
+    # Sort by date
+    df_lik = df_lik.sort_values('Date')
+    
+    # Create chart
+    fig = px.bar(
+        df_lik,
+        x='Month',
+        y='liquidity',
+        text='liquidity'
+    )
+    
+    fig.update_traces(
+        texttemplate='%{text:.2f}',
+        textposition='outside'
+    )
+    
+    fig.update_layout(
+        title=dict(
+            text="Likuiditas Wajib (x BPIH)", x=0.5, xanchor='center', font=dict(size=18)
+        ),
+        xaxis=dict(
+            title="Bulan",
+            tickangle=-30
+        ),
+        yaxis_title="Likuiditas Wajib",
+        template="seaborn"
+    )
+    
+    # Add dotted line at y = 2
+    fig.add_shape(
+        type="line",
+        x0=0,
+        x1=1,
+        y0=2,
+        y1=2,
+        xref='paper',
+        yref='y',
+        line=dict(
+            color="red",
+            width=2,
+            dash="dot"
+        )
+    )
+    
+    # Add annotation for the line
+    fig.add_annotation(
+        xref='paper',
+        x=1,
+        y=2,
+        xanchor='left',
+        text="2x BPIH",
+        showarrow=False,
+        font=dict(color="red"),
+        yshift=10
+    )
+    st.plotly_chart(fig, use_container_width=True, height=200)
+
     # Make the data editable with proper column config
     edited_data = st.data_editor(
-        df_drive,
+        df_inv,
         use_container_width=True,
         num_rows="dynamic",
         column_config={
@@ -47,6 +148,7 @@ with tab0:
     # Show the result
     st.write("Updated Data:")
     st.dataframe(edited_data)
+
 # Download the file
 #url = 'https://drive.google.com/uc?id=1jrbBbdiYlYUM3wF2-9r1MpMoBFcBRPgZ'
 #output = 'Test_Likuid.xlsx'
