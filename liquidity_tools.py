@@ -46,38 +46,6 @@ with tab5:
     )
     
 with tab0:
-    # Layout: 1/4 for selectbox, 3/4 for plot
-    col_select, col_empty = st.columns([1, 3])
-    # Default: this month's end
-    today = pd.to_datetime("today").replace(day=1)
-    default_month = (today + MonthEnd(0)).strftime('%b %Y')
-    
-    # Month options: Jan–Dec 2025
-    months = pd.date_range(start='2025-01-01', end='2025-12-31', freq='M')
-    month_options = [m.strftime('%b %Y') for m in months]
-    
-    # Selectbox
-    with col_select:
-        selected_month_str = st.selectbox(
-            "Pilih Bulan",
-            month_options,
-            index=month_options.index(default_month) if default_month in month_options else 0
-        )
-
-    with col_empty:
-        st.empty()
-    
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("🔥 Likuiditas Wajib", "2.02x BPIH", "25.47% YoY, -1.00% MoM", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
-    with col2:
-        st.metric("📊 Investasi Jangka Pendek", "8,44 triliun", "", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
-    with col3:
-        st.metric("🟣 Penempatan PIH Reguler", "28,97 triliun", "", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
-    with col4:
-        st.metric("📍 BPIH", "18,53 triliun", "-7,02% YoY", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
-    
-with tab0:
     # Ensure 'maturity date' is in datetime format
     df_inv=edited_data_inv
     df_inv['Maturity Date'] = pd.to_datetime(df_inv['Maturity Date'], errors='coerce')
@@ -125,6 +93,38 @@ with tab0:
     # Sort by date
     df_lik = df_lik.sort_values('Date')
     
+    # Layout: 1/4 for selectbox, 3/4 for plot
+    col_select, col_empty = st.columns([1, 3])
+    # Default: this month's end
+    today = pd.to_datetime("today").replace(day=1)
+    default_month = (today + MonthEnd(0)).strftime('%b %Y')
+    
+    # Month options: Jan–Dec 2025
+    months = pd.date_range(start='2025-01-01', end='2025-12-31', freq='M')
+    month_options = [m.strftime('%b %Y') for m in months]
+    
+    # Selectbox
+    with col_select:
+        selected_month_str = st.selectbox(
+            "Pilih Bulan",
+            month_options,
+            index=month_options.index(default_month) if default_month in month_options else 0
+        )
+
+    with col_empty:
+        st.empty()
+    
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("🔥 Likuiditas Wajib", "2.02x BPIH", "25.47% YoY, -1.00% MoM", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+    with col2:
+        st.metric("📊 Investasi Jangka Pendek", "8,44 triliun", "", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+    with col3:
+        st.metric("🟣 Penempatan PIH Reguler", "28,97 triliun", "", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+    with col4:
+        st.metric("📍 BPIH", "18,53 triliun", "-7,02% YoY", border=True, help="Angka di atas bulan sekarang bersifat proyeksi", label_visibility="visible")
+    
+with tab0:
     def plot_liquidity_by_month(end_month_str):
         end_date = pd.to_datetime(end_month_str) + MonthEnd(0)
         start_date = end_date - pd.DateOffset(months=13) + pd.offsets.MonthBegin(0)
