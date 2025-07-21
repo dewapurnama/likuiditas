@@ -133,7 +133,7 @@ with tab0:
     st.plotly_chart(fig, use_container_width=True, height=200)
 
     # Make the data editable with proper column config
-    edited_data = st.data_editor(
+    edited_data_inv = st.data_editor(
         df_inv,
         use_container_width=True,
         num_rows="dynamic",
@@ -146,8 +146,18 @@ with tab0:
         }
     )
     # Show the result
-    st.write("Updated Data:")
-    st.dataframe(edited_data)
+    st.write("Update Data Investasi:")
+    st.dataframe(edited_data_inv)
+
+    # Make the data editable with proper column config
+    edited_data_pnp = st.data_editor(
+        df_pnp,
+        use_container_width=True,
+        num_rows="dynamic",
+    )
+    # Show the result
+    st.write("Update Data Penempatan:")
+    st.dataframe(edited_data_pnp)
 
 # Download the file
 #url = 'https://drive.google.com/uc?id=1jrbBbdiYlYUM3wF2-9r1MpMoBFcBRPgZ'
