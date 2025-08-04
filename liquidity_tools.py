@@ -3,6 +3,8 @@ import streamlit as st
 import plotly.express as px
 from pandas.tseries.offsets import MonthEnd
 import gdown
+import numpy as np
+from sklearn.linear_model import LinearRegression
 
 st.set_page_config(layout="wide")
 
@@ -288,11 +290,66 @@ with tab3:
             'Maturity Profile DAU': dau_total
         })
     
+    # --- Sample Assumption ---
+    # df_btl must contain 'Bulan' (datetime), 'Reguler', 'Khusus'
+    
+    # Step 1: Filter rows with valid Reguler and Khusus
+    df_filtered = df_btl[
+        (df_btl['Reguler'] != 0) & (df_btl['Khusus'] != 0)
+    ].dropna(subset=['Reguler', 'Khusus'])
+    
+    # Step 2: Get last 12 valid entries
+    df_last12 = df_filtered.tail(12).copy().sort_values('Bulan')
+    
+    # Step 3: Prepare X and Y for both models
+    known_x = df_last12['Bulan'].dt.month.values.reshape(-1, 1)
+    known_y_reg = df_last12['Reguler'].values
+    known_y_khs = df_last12['Khusus'].values
+    
+    # Step 4: Train separate models
+    model_reg = LinearRegression()
+    model_khs = LinearRegression()
+    
+    model_reg.fit(known_x, known_y_reg)
+    model_khs.fit(known_x, known_y_khs)
+    
+    # Step 5: Determine the first zero-row after last non-zero data
+    last_non_zero_idx = df_btl[(df_btl['Reguler'] != 0) & (df_btl['Khusus'] != 0)].last_valid_index()
+    df_after = df_btl.loc[last_non_zero_idx + 1:] if last_non_zero_idx + 1 < len(df_btl) else pd.DataFrame()
+    
+    # Find first row where either Reguler or Khusus is zero
+    zero_start_row = df_after[
+        (df_after['Reguler'] == 0) | (df_after['Khusus'] == 0)
+    ].head(1)
+    
+    if not zero_start_row.empty:
+        start_date = pd.to_datetime(zero_start_row['Bulan'].values[0]).replace(day=1)
+    else:
+        # fallback if no zero row found after last valid
+        start_date = (df_btl['Bulan'].max() + pd.DateOffset(months=1)).replace(day=1)
+    
+    # Step 6: Create future dates
+    end_date = pd.Timestamp("2050-12-01")
+    future_dates = pd.date_range(start=start_date, end=end_date, freq="MS") + pd.offsets.MonthEnd(0)
+    
+    # Step 7: Predict
+    future_month_nums = future_dates.month.values.reshape(-1, 1)
+    
+    pred_reg = np.ceil(model_reg.predict(future_month_nums))
+    pred_khs = np.ceil(model_khs.predict(future_month_nums))
+    
+    # Step 8: Combine into DataFrame
+    df_pred = pd.DataFrame({
+        'bulan': future_dates,
+        'batal_reg': pred_reg,
+        'batal_khs': pred_khs
+    })
+
     # Final DataFrame
     df_maturity_profile = pd.DataFrame(result)
     st.write("Update Matprof:")
     edited_data_pnp = st.data_editor(
-        df_berangkat,
+        df_pred,
         use_container_width=True,
         num_rows="dynamic",
     )
