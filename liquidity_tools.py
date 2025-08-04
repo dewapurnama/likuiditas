@@ -421,18 +421,16 @@ with tab3:
         
     # Sidebar input
     # Create two columns
-    col1, col2 = st.columns(2)
+    col1, col2, col3, col4 = st.columns(4)
     
     # === Row 1 ===
     with col1:
         wl_reg = st.number_input("Initial Waiting List Reguler", value=5_299_092)
     with col2:
         wl_khs = st.number_input("Initial Waiting List Khusus", value=126_577)
-    
-    # === Row 2 ===
-    with col1:
+    with col3:
         saldo_reg = st.number_input("Saldo Jemaah Reguler", value=26_837_630.65)
-    with col2:
+    with col4:
         saldo_khs = st.number_input("Saldo Jemaah Khusus", value=4_447.77)
     
     # === Row 3 ===
@@ -440,15 +438,76 @@ with tab3:
         sl_reg = st.number_input("Setoran Lunas Reguler", value=348_246_879_200.0)
     with col2:
         sl_khs = st.number_input("Setoran Lunas Khusus", value=19_980_365.77)
+    with col3:
+        pnp_reg = st.number_input("Penempatan Reguler", value=28_942_792_290_449.1)
+    with col2:
+        pnp_khs = st.number_input("Penempatan Khusus", value=378_282_969.67)
 
     df_final = compute_projection(df_pred, df_berangkat, wl_reg=wl_reg, wl_khs=wl_khs, 
                               saldo_reg=saldo_reg, saldo_khs=saldo_khs, sl_reg=sl_reg, sl_khs=sl_khs)
+
+    df_final['liab_bb_reg']=df_final['batal_reg (IDR juta)']+df_final['bipih_reg']
+    df_final['liab_bb_khs']=df_final['batal_khs (USD ribu)']+df_final['bipih_khs']
+    df_al_bb = pd.merge(df_final, df_maturity_profile, left_on='bulan', right_on='Date', how='left').drop(columns=['Date', 'Maturity Profile DAU'])
+    df_al_bb['Maturity Profile IDR'] = df_al_bb['Maturity Profile IDR'].fillna(0).astype('Int64')
+    df_al_bb['Maturity Profile USD'] = df_al_bb['Maturity Profile USD'].fillna(0).astype('Int64')
+    df_al_bb['Maturity Profile Khusus'] = df_al_bb['Maturity Profile Khusus'].fillna(0)
+    df_al_bb['jatuh_tempo_reg'] = df_al_bb['Maturity Profile IDR']+df_al_bb['Maturity Profile USD'] 
+
+    buckets = [1, 3, 6, 12, 24, 36, 48, 60, 72, 84, 96, 108, 120]
+
+    maturity_profile = []
+    
+    # Regular buckets
+    for i, bucket in enumerate(buckets):
+        lower = 0 if i == 0 else buckets[i - 1]
+        upper = bucket
+    
+        df_slice = df_al_bb.iloc[lower:upper]
+    
+        asset_reg = df_slice['jatuh_tempo_reg'].sum()
+        liability_reg = df_slice['liab_bb_reg'].sum()
+        asset_khs = df_slice['Maturity Profile Khusus'].sum()
+        liability_khs = df_slice['liab_bb_khs'].sum()
+    
+        # ➕ Add fund_placement only to first bucket
+        if i == 0:
+            asset_reg += pnp_reg
+            asset_khs += pnp_khs
+    
+        maturity_profile.append({
+            'waktu': f'{bucket} mo',
+            'asset_reg': asset_reg,
+            'liab_reg': liability_reg,
+            'asset_khs': asset_khs,
+            'liab_khs': liability_khs
+        })
+    
+    # ➕ Final "greater than" bucket
+    last_upper = buckets[-1]
+    df_tail = df_al_bb.iloc[last_upper:]
+    
+    asset_reg_tail_sum = df_tail['jatuh_tempo_reg'].sum()
+    liab_reg_tail_sum = df_tail['liab_bb_reg'].sum()
+    asset_khs_tail_sum = df_tail['Maturity Profile Khusus'].sum()
+    liab_khs_tail_sum = df_tail['liab_bb_khs'].sum()
+    
+    maturity_profile.append({
+        'waktu': f'>{last_upper} mo',
+        'asset_reg': asset_reg_tail_sum,
+        'liab_reg': liab_reg_tail_sum,
+        'asset_khs': asset_khs_tail_sum,
+        'liab_khs': liab_khs_tail_sum
+    })
+    
+    # Convert to DataFrame
+    df_matprof = pd.DataFrame(maturity_profile)
     
     # Final DataFrame
     df_maturity_profile = pd.DataFrame(result)
     st.write("Update Matprof:")
     edited_data_pnp = st.data_editor(
-        df_final,
+        df_matprof,
         use_container_width=True,
         num_rows="dynamic",
     )
