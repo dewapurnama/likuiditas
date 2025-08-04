@@ -528,7 +528,9 @@ with tab3:
     # ---- Step 3: Melt data for Plotly ----
     df_melted = df_plot.melt(id_vars='waktu', value_vars=['asset_reg', 'liab_reg'],
                              var_name='Type', value_name='Value')
-    
+
+    # ---- Step 3.5: Rename Type for legend ----
+    df_melted['Type'] = df_melted['Type'].replace({'asset_reg': 'Asset', 'liab_reg': 'Liability'})
     # ---- Step 4: Create Bar Chart ----
     fig = px.bar(df_melted,
                  x='waktu',
@@ -537,14 +539,14 @@ with tab3:
                  barmode='group',
                  text='Value',
                  labels={'Value': 'Nominal (T)', 'Bucket': 'Time Bucket'},
-                 title='Asset vs Liability by Maturity Profile (in Trillions)')
+                 title='Maturity Profile Dana PIH Reguler')
     
     # ---- Step 5: Final styling ----
     fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
     
     fig.update_layout(
         xaxis_title='Maturity Profile',
-        yaxis_title='Nominal (T)',
+        yaxis_title='Nominal (triliun)',
         yaxis_tickformat=',.2f',
         bargap=0.2,
         template='plotly_white',
