@@ -345,6 +345,90 @@ with tab3:
         'batal_khs': pred_khs
     })
 
+    def compute_projection(df_pred, df_berangkat, wl_reg, wl_khs, saldo_reg, saldo_khs, sl_reg, sl_khs):
+        df_merged = pd.merge(
+            df_pred.copy(),
+            df_berangkat[['Bulan', 'brk_reg', 'brk_khs']].copy(),
+            left_on='bulan',
+            right_on='Bulan',
+            how='left'
+        ).drop(columns=['Bulan'])
+    
+        df_merged[['brk_reg', 'brk_khs']] = df_merged[['brk_reg', 'brk_khs']].fillna(0).astype(int)
+        df_merged['waiting_list_reg'] = 0
+        df_merged['waiting_list_khs'] = 0
+    
+        # ==== REGULER ====
+        proj_reg = df_merged.loc[0, 'batal_reg']
+        ber_reg = df_merged.loc[0, 'brk_reg']
+        wait_reg = max(0, wl_reg - proj_reg - ber_reg)
+        df_merged.loc[0, 'waiting_list_reg'] = wait_reg
+    
+        for i in range(1, len(df_merged)):
+            prev = df_merged.loc[i - 1, 'waiting_list_reg']
+            if prev == 0:
+                df_merged.loc[i:, ['waiting_list_reg', 'batal_reg', 'brk_reg']] = 0
+                break
+            proj = df_merged.loc[i, 'batal_reg']
+            ber = df_merged.loc[i, 'brk_reg']
+            rem = prev - proj
+            if ber > rem:
+                df_merged.loc[i, 'brk_reg'] = max(0, rem)
+            df_merged.loc[i, 'waiting_list_reg'] = max(0, prev - proj - df_merged.loc[i, 'brk_reg'])
+    
+        # ==== KHUSUS ====
+        proj_khs = df_merged.loc[0, 'batal_khs']
+        ber_khs = df_merged.loc[0, 'brk_khs']
+        wait_khs = max(0, wl_khs - proj_khs - ber_khs)
+        df_merged.loc[0, 'waiting_list_khs'] = wait_khs
+    
+        for i in range(1, len(df_merged)):
+            prev = df_merged.loc[i - 1, 'waiting_list_khs']
+            if prev == 0:
+                df_merged.loc[i:, ['waiting_list_khs', 'batal_khs', 'brk_khs']] = 0
+                break
+            proj = df_merged.loc[i, 'batal_khs']
+            ber = df_merged.loc[i, 'brk_khs']
+            rem = prev - proj
+            if ber > rem:
+                df_merged.loc[i, 'brk_khs'] = max(0, rem)
+            df_merged.loc[i, 'waiting_list_khs'] = max(0, prev - proj - df_merged.loc[i, 'brk_khs'])
+    
+            
+        # === Batal Value in Rupiah/Thousand USD ===
+        df_merged['batal_reg (IDR juta)'] = df_merged['batal_reg'] * saldo_reg
+        df_merged['batal_khs (USD ribu)'] = df_merged['batal_khs'] * saldo_khs
+        
+        # ==== Calculate BIPIH ====
+        cutoff_date = df_merged['bulan'].min() + pd.DateOffset(months=13)
+    
+        def calc_bipih_reg(row):
+            if row['bulan'] <= cutoff_date:
+                return (row['brk_reg'] * saldo_reg) + (sl_reg if row['brk_reg'] > 0 else 0)
+            else:
+                return row['brk_reg'] * saldo_reg
+    
+        def calc_bipih_khs(row):
+            if row['bulan'] <= cutoff_date:
+                return (row['brk_khs'] * saldo_khs) + (sl_khs if row['brk_khs'] > 0 else 0)
+            else:
+                return row['brk_khs'] * saldo_khs
+    
+        df_merged['bipih_reg'] = df_merged.apply(calc_bipih_reg, axis=1)
+        df_merged['bipih_khs'] = df_merged.apply(calc_bipih_khs, axis=1)
+    
+        return df_merged
+        
+    # Sidebar input
+    wl_reg = st.number_input("Initial Waiting List Reguler", value=5_299_092)
+    wl_khs = st.number_input("Initial Waiting List Khusus", value=126_577)
+    
+    saldo_reg = st.number_input("Saldo Jemaah Reguler", value=26_837_630.65)
+    saldo_khs = st.number_input("Saldo Jemaah Khusus", value=4_447.77)
+    
+    sl_reg = st.number_input("Setoran Lunas Reguler", value=348_246_879_200.0)
+    sl_khs = st.number_input("Setoran Lunas Khusus", value=19_980_365.77)
+    
     # Final DataFrame
     df_maturity_profile = pd.DataFrame(result)
     st.write("Update Matprof:")
