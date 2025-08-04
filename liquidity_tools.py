@@ -436,7 +436,7 @@ with tab3:
     df_maturity_profile = pd.DataFrame(result)
     st.write("Update Matprof:")
     edited_data_pnp = st.data_editor(
-        df_pred,
+        df_final,
         use_container_width=True,
         num_rows="dynamic",
     )
