@@ -289,6 +289,8 @@ with tab3:
             'Maturity Profile Khusus': total_khusus,
             'Maturity Profile DAU': dau_total
         })
+    # Final DataFrame
+    df_maturity_profile = pd.DataFrame(result)
     
     # --- Sample Assumption ---
     # df_btl must contain 'Bulan' (datetime), 'Reguler', 'Khusus'
@@ -503,8 +505,6 @@ with tab3:
     # Convert to DataFrame
     df_matprof = pd.DataFrame(maturity_profile)
     
-    # Final DataFrame
-    df_maturity_profile = pd.DataFrame(result)
     st.write("Update Matprof:")
     edited_data_pnp = st.data_editor(
         df_matprof,
