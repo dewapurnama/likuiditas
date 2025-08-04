@@ -539,16 +539,17 @@ with tab3:
                  barmode='group',
                  text='Value',
                  labels={'Value': 'Nominal (T)', 'Bucket': 'Time Bucket'},
-                 title={
-                    'text': 'Asset vs Liability by Maturity Profile (in Trillions)',
-                    'x': 0.5,  # center
-                    'xanchor': 'center'
-                })
+                 title= 'Asset vs Liability by Maturity Profile (in Trillions)')
     
     # ---- Step 5: Final styling ----
     fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
     
     fig.update_layout(
+        title={
+            'text': 'Asset vs Liability by Maturity Profile (in Trillions)',
+            'x': 0.5,
+            'xanchor': 'center'
+        },
         xaxis_title='Maturity Profile',
         yaxis_title='Nominal (triliun)',
         yaxis_tickformat=',.2f',
