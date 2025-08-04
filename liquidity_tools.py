@@ -574,7 +574,7 @@ with tab3:
         df_plot['liab_khs'] = df_plot['liab_khs'] / 1_000_000
         
         # ---- Step 2.5: Remove rows where both asset and liability are zero ----
-        df_plot = df_plot[~((df_plot['asset_reg'] == 0) & (df_plot['liab_reg'] == 0))].copy()
+        df_plot = df_plot[~((df_plot['asset_khs'] == 0) & (df_plot['liab_khs'] == 0))].copy()
         
         # ---- Step 3: Melt data for Plotly ----
         df_melted = df_plot.melt(id_vars='waktu', value_vars=['asset_khs', 'liab_khs'],
