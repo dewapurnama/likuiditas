@@ -428,6 +428,9 @@ with tab3:
     
     sl_reg = st.number_input("Setoran Lunas Reguler", value=348_246_879_200.0)
     sl_khs = st.number_input("Setoran Lunas Khusus", value=19_980_365.77)
+
+    df_final = compute_projection(df_pred, df_berangkat, wl_reg=wl_reg, wl_khs=wl_khs, 
+                              saldo_reg=saldo_reg, saldo_khs=saldo_khs, sl_reg=sl_reg, sl_khs=sl_khs)
     
     # Final DataFrame
     df_maturity_profile = pd.DataFrame(result)
