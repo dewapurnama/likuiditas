@@ -420,14 +420,26 @@ with tab3:
         return df_merged
         
     # Sidebar input
-    wl_reg = st.number_input("Initial Waiting List Reguler", value=5_299_092)
-    wl_khs = st.number_input("Initial Waiting List Khusus", value=126_577)
+    # Create two columns
+    col1, col2 = st.columns(2)
     
-    saldo_reg = st.number_input("Saldo Jemaah Reguler", value=26_837_630.65)
-    saldo_khs = st.number_input("Saldo Jemaah Khusus", value=4_447.77)
+    # === Row 1 ===
+    with col1:
+        wl_reg = st.number_input("Initial Waiting List Reguler", value=5_299_092)
+    with col2:
+        wl_khs = st.number_input("Initial Waiting List Khusus", value=126_577)
     
-    sl_reg = st.number_input("Setoran Lunas Reguler", value=348_246_879_200.0)
-    sl_khs = st.number_input("Setoran Lunas Khusus", value=19_980_365.77)
+    # === Row 2 ===
+    with col1:
+        saldo_reg = st.number_input("Saldo Jemaah Reguler", value=26_837_630.65)
+    with col2:
+        saldo_khs = st.number_input("Saldo Jemaah Khusus", value=4_447.77)
+    
+    # === Row 3 ===
+    with col1:
+        sl_reg = st.number_input("Setoran Lunas Reguler", value=348_246_879_200.0)
+    with col2:
+        sl_khs = st.number_input("Setoran Lunas Khusus", value=19_980_365.77)
 
     df_final = compute_projection(df_pred, df_berangkat, wl_reg=wl_reg, wl_khs=wl_khs, 
                               saldo_reg=saldo_reg, saldo_khs=saldo_khs, sl_reg=sl_reg, sl_khs=sl_khs)
