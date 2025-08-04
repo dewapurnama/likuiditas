@@ -193,6 +193,7 @@ with tab0:
         df_filtered = df_lik[(df_lik['Date'] >= start_date) & (df_lik['Date'] <= end_date)].copy()
         df_filtered['Month'] = df_filtered['Date'].dt.strftime('%b %Y')
         df_filtered['liquidity'] = (df_filtered['Short-Term Inv Nominal'] + df_filtered['Penempatan']) / df_filtered['BPIH']
+        df_filtered = df_filtered.sort_values('Date')
 
         fig = px.bar(df_filtered, x='Month', y='liquidity', text='liquidity')
         fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
