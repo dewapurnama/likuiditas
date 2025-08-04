@@ -193,8 +193,7 @@ with tab0:
         df_filtered = df_lik[(df_lik['Date'] >= start_date) & (df_lik['Date'] <= end_date)].copy()
         df_filtered['Month'] = df_filtered['Date'].dt.strftime('%b %Y')
         df_filtered['liquidity'] = (df_filtered['Short-Term Inv Nominal'] + df_filtered['Penempatan']) / df_filtered['BPIH']
-        df_filtered = df_filtered.sort_values('Date')
-    
+
         fig = px.bar(df_filtered, x='Month', y='liquidity', text='liquidity')
         fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
         fig.update_layout(
@@ -207,27 +206,15 @@ with tab0:
         fig.add_annotation(xref='paper', x=1, y=2, text="2x BPIH", showarrow=False, font=dict(color="red"), yshift=10)
     
         st.plotly_chart(fig, use_container_width=True)
-
-    def plot_liquidity_by_month(end_month_str):
-        # 1. Convert input to datetime
-        end_date = pd.to_datetime(end_month_str) + MonthEnd(0)
-        start_date = end_date - pd.DateOffset(months=13) + pd.offsets.MonthBegin(0)
-    
-        # 2. Make sure 'Date' is datetime
-        df_lik['Date'] = pd.to_datetime(df_lik['Date'])
-    
-        # 3. Filter for the last 12 months
-        df_filtered = df_lik[(df_lik['Date'] >= start_date) & (df_lik['Date'] <= end_date)].copy()
     
         # 4. Prepare columns
-        df_filtered['Month'] = df_filtered['Date'].dt.strftime('%b %Y')
         df_filtered['Ekses/Defisit'] = (df_filtered['liquidity']-2.1)*df_filtered['BPIH']
         df_filtered['Ekses/Defisit (Miliar)'] = df_filtered['Ekses/Defisit'] / 1e9
         df_filtered['color'] = df_filtered['Ekses/Defisit (Miliar)'].apply(lambda x: 'red' if x < 0 else 'blue')
         df_filtered = df_filtered.sort_values('Date')
     
         # 5. Create bar chart
-        fig = px.bar(
+        fig2 = px.bar(
             df_filtered,
             x='Month',
             y='Ekses/Defisit (Miliar)',
@@ -236,12 +223,12 @@ with tab0:
             color_discrete_map={'red': 'red', 'blue': 'blue'}
         )
     
-        fig.update_traces(
+        fig2.update_traces(
             texttemplate='%{text:.2f}',
             textposition='outside'
         )
     
-        fig.update_layout(
+        fig2.update_layout(
             title=dict(
                 text="Ekses/Defisit Likuiditas", x=0.5, xanchor='center', font=dict(size=18)
             ),
@@ -254,7 +241,7 @@ with tab0:
         )
     
         # 6. Add dotted line
-        fig.add_shape(
+        fig2.add_shape(
             type="line",
             x0=0, x1=1,
             y0=2, y1=2,
@@ -262,7 +249,7 @@ with tab0:
             yref='y',
             line=dict(color="black", width=1)
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig2, use_container_width=True)
         
     # Layout: 1/4 for selectbox, 3/4 for plot
     #col_select, col_plot = st.columns([1, 3])
