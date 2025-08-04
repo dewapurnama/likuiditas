@@ -442,7 +442,7 @@ with tab3:
         sl_khs = st.number_input("Setoran Lunas Khusus", value=19_980_365.77)
     with col3:
         pnp_reg = st.number_input("Penempatan Reguler", value=28_942_792_290_449.1)
-    with col2:
+    with col4:
         pnp_khs = st.number_input("Penempatan Khusus", value=378_282_969.67)
 
     df_final = compute_projection(df_pred, df_berangkat, wl_reg=wl_reg, wl_khs=wl_khs, 
