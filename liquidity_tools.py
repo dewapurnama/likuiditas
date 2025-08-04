@@ -9,8 +9,8 @@ st.set_page_config(layout="wide")
 tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs(["Likuiditas Wajib", "Solvabilitas", "Proyeksi LCR", "Maturity Profile", "Liquidity Gap", "Data"])
 
 # Download the file
-url = 'https://drive.google.com/uc?id=1x5Rjpzg7Z5TmVbbeORQLopMbEdShCzD_'
-output = 'Data Likuiditas.xlsx'
+url = 'https://drive.google.com/uc?id=16O_hbQ167m9Pnhj84T1IMXvW0hJaeoGf'
+output = 'Data Likuiditas (1).xlsx'
 gdown.download(url, output, quiet=False)
 
 tab0.markdown(
