@@ -570,8 +570,8 @@ with tab3:
         df_plot['waktu'] = df_plot['waktu'].apply(format_bucket)
         
         # ---- Step 2: Scale values to Trillions ----
-        df_plot['asset_khs'] = df_plot['asset_khs'] / 1_000_000_000_000
-        df_plot['liab_khs'] = df_plot['liab_khs'] / 1_000_000_000_000
+        df_plot['asset_khs'] = df_plot['asset_khs'] / 1_000_000
+        df_plot['liab_khs'] = df_plot['liab_khs'] / 1_000_000
         
         # ---- Step 3: Melt data for Plotly ----
         df_melted = df_plot.melt(id_vars='waktu', value_vars=['asset_khs', 'liab_khs'],
