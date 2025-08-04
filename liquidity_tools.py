@@ -516,51 +516,53 @@ with tab3:
                 return f'{num} mo'
             else:
                 return f'{num // 12} year'
-    
-    # Apply the formatter
-    df_plot = df_matprof.copy()
-    df_plot['waktu'] = df_plot['waktu'].apply(format_bucket)
-    
-    # ---- Step 2: Scale values to Trillions ----
-    df_plot['asset_reg'] = df_plot['asset_reg'] / 1_000_000_000_000
-    df_plot['liab_reg'] = df_plot['liab_reg'] / 1_000_000_000_000
-    
-    # ---- Step 3: Melt data for Plotly ----
-    df_melted = df_plot.melt(id_vars='waktu', value_vars=['asset_reg', 'liab_reg'],
-                             var_name='Type', value_name='Value')
 
-    # ---- Step 3.5: Rename Type for legend ----
-    df_melted['Type'] = df_melted['Type'].replace({'asset_reg': 'Asset', 'liab_reg': 'Liability'})
-    # ---- Step 4: Create Bar Chart ----
-    fig = px.bar(df_melted,
-                 x='waktu',
-                 y='Value',
-                 color='Type',
-                 barmode='group',
-                 text='Value',
-                 labels={'Value': 'Nominal (T)', 'Bucket': 'Time Bucket'},
-                 title= 'Asset vs Liability by Maturity Profile (in Trillions)')
+    col1, col2 = st.columns(2)
+    with col1:
+        # Apply the formatter
+        df_plot = df_matprof.copy()
+        df_plot['waktu'] = df_plot['waktu'].apply(format_bucket)
+        
+        # ---- Step 2: Scale values to Trillions ----
+        df_plot['asset_reg'] = df_plot['asset_reg'] / 1_000_000_000_000
+        df_plot['liab_reg'] = df_plot['liab_reg'] / 1_000_000_000_000
+        
+        # ---- Step 3: Melt data for Plotly ----
+        df_melted = df_plot.melt(id_vars='waktu', value_vars=['asset_reg', 'liab_reg'],
+                                 var_name='Type', value_name='Value')
     
-    # ---- Step 5: Final styling ----
-    fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
-    
-    fig.update_layout(
-        title={
-            'text': 'Maturity Profile Dana PIH Reguler',
-            'x': 0.5,
-            'xanchor': 'center'
-        },
-        xaxis_title='Maturity Profile',
-        yaxis_title='Nominal (triliun)',
-        yaxis_tickformat=',.2f',
-        bargap=0.2,
-        template='plotly_white',
-    
-        # ✅ Legend styling (no "Type" title, centered on top)
-        legend_title_text='',
-        legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5)
-    )
-    st.plotly_chart(fig, use_container_width=True)
+        # ---- Step 3.5: Rename Type for legend ----
+        df_melted['Type'] = df_melted['Type'].replace({'asset_reg': 'Asset', 'liab_reg': 'Liability'})
+        # ---- Step 4: Create Bar Chart ----
+        fig = px.bar(df_melted,
+                     x='waktu',
+                     y='Value',
+                     color='Type',
+                     barmode='group',
+                     text='Value',
+                     labels={'Value': 'Nominal (T)', 'Bucket': 'Time Bucket'},
+                     title= 'Asset vs Liability by Maturity Profile (in Trillions)')
+        
+        # ---- Step 5: Final styling ----
+        fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+        
+        fig.update_layout(
+            title={
+                'text': 'Maturity Profile Dana PIH Reguler',
+                'x': 0.5,
+                'xanchor': 'center'
+            },
+            xaxis_title='Maturity Profile',
+            yaxis_title='Nominal (triliun)',
+            yaxis_tickformat=',.2f',
+            bargap=0.2,
+            template='plotly_white',
+        
+            # ✅ Legend styling (no "Type" title, centered on top)
+            legend_title_text='',
+            legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5)
+        )
+        st.plotly_chart(fig, use_container_width=True)
     
     st.write("Update Matprof:")
     edited_data_pnp = st.data_editor(
