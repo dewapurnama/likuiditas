@@ -539,7 +539,11 @@ with tab3:
                  barmode='group',
                  text='Value',
                  labels={'Value': 'Nominal (T)', 'Bucket': 'Time Bucket'},
-                 title='Maturity Profile Dana PIH Reguler')
+                 title={
+                    'text': 'Asset vs Liability by Maturity Profile (in Trillions)',
+                    'x': 0.5,  # center
+                    'xanchor': 'center'
+                })
     
     # ---- Step 5: Final styling ----
     fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
