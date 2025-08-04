@@ -86,6 +86,7 @@ with tab0:
     df_lik['Month'] = df_lik['Date'].dt.strftime('%b %Y')
     df_lik['liquidity'] = (df_lik['Short-Term Inv Nominal'] + df_lik['Penempatan']) / df_lik['BPIH']
     df_lik = df_lik.sort_values('Date')
+    df_lik['Ekses/Defisit'] = (df_lik['liquidity']-2.1)*df_lik['BPIH']
 
     # === Select Month ===
     col_select, col_empty = st.columns([1, 3])
@@ -207,6 +208,62 @@ with tab0:
     
         st.plotly_chart(fig, use_container_width=True)
 
+    def plot_liquidity_by_month(end_month_str):
+        # 1. Convert input to datetime
+        end_date = pd.to_datetime(end_month_str) + MonthEnd(0)
+        start_date = end_date - pd.DateOffset(months=13) + pd.offsets.MonthBegin(0)
+    
+        # 2. Make sure 'Date' is datetime
+        df_lik['Date'] = pd.to_datetime(df_lik['Date'])
+    
+        # 3. Filter for the last 12 months
+        df_filtered = df_lik[(df_lik['Date'] >= start_date) & (df_lik['Date'] <= end_date)].copy()
+    
+        # 4. Prepare columns
+        df_filtered['Month'] = df_filtered['Date'].dt.strftime('%b %Y')
+        df_filtered['Ekses/Defisit'] = (df_filtered['liquidity']-2.1)*df_filtered['BPIH']
+        df_filtered['Ekses/Defisit (Miliar)'] = df_filtered['Ekses/Defisit'] / 1e9
+        df_filtered['color'] = df_filtered['Ekses/Defisit (Miliar)'].apply(lambda x: 'red' if x < 0 else 'blue')
+        df_filtered = df_filtered.sort_values('Date')
+    
+        # 5. Create bar chart
+        fig = px.bar(
+            df_filtered,
+            x='Month',
+            y='Ekses/Defisit (Miliar)',
+            text='Ekses/Defisit (Miliar)',
+            color='color',  # This maps color based on value
+            color_discrete_map={'red': 'red', 'blue': 'blue'}
+        )
+    
+        fig.update_traces(
+            texttemplate='%{text:.2f}',
+            textposition='outside'
+        )
+    
+        fig.update_layout(
+            title=dict(
+                text="Ekses/Defisit Likuiditas", x=0.5, xanchor='center', font=dict(size=18)
+            ),
+            xaxis=dict(
+                title="Bulan",
+                tickangle=-30
+            ),
+            yaxis_title="Ekses/Defisit (miliar)",
+            template="seaborn", showlegend=False
+        )
+    
+        # 6. Add dotted line
+        fig.add_shape(
+            type="line",
+            x0=0, x1=1,
+            y0=2, y1=2,
+            xref='paper',
+            yref='y',
+            line=dict(color="black", width=1)
+        )
+        st.plotly_chart(fig, use_container_width=True)
+        
     # Layout: 1/4 for selectbox, 3/4 for plot
     #col_select, col_plot = st.columns([1, 3])
     
