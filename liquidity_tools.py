@@ -229,6 +229,74 @@ with tab0:
     selected_month = pd.to_datetime(selected_month_str).strftime('%Y-%m')
     plot_liquidity_by_month(selected_month)
 
+with tab4:
+    import pandas as pd
+    from pandas.tseries.offsets import MonthEnd
+    
+    # Ensure proper datetime conversion
+    df_inv['Maturity Date'] = pd.to_datetime(df_inv['Maturity Date'], errors='coerce')
+    df_inv['Settlement Date'] = pd.to_datetime(df_inv['Settlement Date'], errors='coerce')
+    df_inv['Tanggal Jual'] = pd.to_datetime(df_inv['Tanggal Jual'], errors='coerce')
+    
+    # Drop rows with no Maturity Date and explicitly copy to avoid SettingWithCopyWarning
+    df_inv = df_inv.dropna(subset=['Maturity Date']).copy()
+    
+    # Extract Maturity Month safely
+    df_inv.loc[:, 'Maturity Month'] = df_inv['Maturity Date'].dt.to_period('M').dt.to_timestamp('M')
+    valid_dates = sorted(df_inv['Maturity Month'].unique())
+    
+    # Report reference
+    report_date = pd.Timestamp('2025-06-30')
+    perolehan_cutoff = report_date - MonthEnd(1)
+    
+    # Result holder
+    result = []
+    
+    for dt in valid_dates:
+        start_of_month = dt - MonthEnd(1)
+        end_of_month = dt
+    
+        # Common filter: maturity month & settlement cutoff & no sale
+        date_filter = (
+            (df_inv['Maturity Date'] > start_of_month) &
+            (df_inv['Maturity Date'] <= end_of_month) &
+            (df_inv['Settlement Date'] <= perolehan_cutoff) &
+            (df_inv['Tanggal Jual'].isna())
+        )
+    
+        # Filter for PIH Reguler
+        reguler = df_inv[(df_inv['Sumber Dana'] == "PIH Reguler") & date_filter]
+        idr_total = reguler[reguler['Ccy'] == "IDR"]['Nominal'].sum()
+        usd_total = reguler[reguler['Ccy'] == "USD"]['Nominal'].sum()
+    
+        # Filter for PIH Khusus
+        khusus = df_inv[(df_inv['Sumber Dana'] == "PIH Khusus") & date_filter]
+        usd_khusus_total = khusus[khusus['Ccy'] == "USD"]['Nominal'].sum()
+        sar_khusus_total = khusus[khusus['Ccy'] == "SAR"]['Nominal'].sum() / 3.75
+        total_khusus = usd_khusus_total + sar_khusus_total
+    
+        # Filter for DAU
+        khusus = df_inv[(df_inv['Sumber Dana'] == "DAU") & date_filter]
+        dau_total = khusus[khusus['Ccy'] == "IDR"]['Nominal'].sum()
+    
+        # Append result
+        result.append({
+            'Date': dt,
+            'Maturity Profile IDR': idr_total,
+            'Maturity Profile USD': usd_total,
+            'Maturity Profile Khusus': total_khusus,
+            'Maturity Profile DAU': dau_total
+        })
+    
+    # Final DataFrame
+    df_maturity_profile = pd.DataFrame(result)
+    st.write("Update Matprof:")
+    edited_data_pnp = st.data_editor(
+        df_maturity_profile,
+        use_container_width=True,
+        num_rows="dynamic",
+    )
+
 # Download the file
 #url = 'https://drive.google.com/uc?id=1jrbBbdiYlYUM3wF2-9r1MpMoBFcBRPgZ'
 #output = 'Test_Likuid.xlsx'
