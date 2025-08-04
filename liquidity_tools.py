@@ -229,9 +229,9 @@ with tab0:
     selected_month = pd.to_datetime(selected_month_str).strftime('%Y-%m')
     plot_liquidity_by_month(selected_month)
 
-with tab4:
-    import pandas as pd
-    from pandas.tseries.offsets import MonthEnd
+with tab3:
+    df_btl = pd.read_excel(output, sheet_name="Pembatalan")
+    df_berangkat = pd.read_excel(output, sheet_name="Keberangkatan")
     
     # Ensure proper datetime conversion
     df_inv['Maturity Date'] = pd.to_datetime(df_inv['Maturity Date'], errors='coerce')
@@ -292,7 +292,7 @@ with tab4:
     df_maturity_profile = pd.DataFrame(result)
     st.write("Update Matprof:")
     edited_data_pnp = st.data_editor(
-        df_maturity_profile,
+        df_berangkat,
         use_container_width=True,
         num_rows="dynamic",
     )
