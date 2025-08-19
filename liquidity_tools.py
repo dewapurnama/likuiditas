@@ -215,14 +215,16 @@ with tab0:
         df_filtered = df_filtered.sort_values('Date')
     
         # 5. Create bar chart
-        fig2 = px.bar(
+        fig = px.bar(
             df_filtered,
             x='Month',
             y='Ekses/Defisit (Miliar)',
             text='Ekses/Defisit (Miliar)',
-            color='color',  # This maps color based on value
-            color_discrete_map={'red': 'red', 'blue': 'blue'}
+            color='color',
+            color_discrete_map={'red': 'red', 'blue': 'blue'},
+            category_orders={'Month': df_filtered.sort_values('Date')['Month'].tolist()}
         )
+
     
         fig2.update_traces(
             texttemplate='%{text:.2f}',
