@@ -278,76 +278,6 @@ with tab0:
     selected_month = pd.to_datetime(selected_month_str).strftime('%Y-%m')
     plot_liquidity_by_month(selected_month)
     
-        # 4. Prepare columns
-        df_filtered['Ekses/Defisit'] = (df_filtered['liquidity']-2.1)*df_filtered['BPIH']
-        df_filtered['Ekses/Defisit (Miliar)'] = df_filtered['Ekses/Defisit'] / 1e9
-        df_filtered['color'] = df_filtered['Ekses/Defisit (Miliar)'].apply(lambda x: 'red' if x < 0 else 'blue')
-        df_filtered = df_filtered.sort_values('Date')
-    
-        # 5. Create bar chart
-        fig2 = px.bar(
-            df_filtered,
-            x='Month',
-            y='Ekses/Defisit (Miliar)',
-            text='Ekses/Defisit (Miliar)',
-            color='color',
-            color_discrete_map={'red': 'red', 'blue': 'blue'},
-            category_orders={'Month': df_filtered.sort_values('Date')['Month'].tolist()}
-        )
-
-    
-        fig2.update_traces(
-            texttemplate='%{text:.2f}',
-            textposition='outside'
-        )
-    
-        fig2.update_layout(
-            title=dict(
-                text="Ekses/Defisit Likuiditas", x=0.5, xanchor='center', font=dict(size=18)
-            ),
-            xaxis=dict(
-                title="Bulan",
-                tickangle=0
-            ),
-            yaxis_title="Ekses/Defisit (miliar)",
-            template="seaborn", showlegend=False
-        )
-    
-        # 6. Add dotted line
-        fig2.add_shape(
-            type="line",
-            x0=0, x1=1,
-            y0=2, y1=2,
-            xref='paper',
-            yref='y',
-            line=dict(color="black", width=1)
-        )
-        st.plotly_chart(fig2, use_container_width=True)
-        
-    # Layout: 1/4 for selectbox, 3/4 for plot
-    #col_select, col_plot = st.columns([1, 3])
-    
-    # Default: this month's end
-    #today = pd.to_datetime("today").replace(day=1)
-    #default_month = (today + MonthEnd(0)).strftime('%b %Y')
-    
-    # Month options: Jan–Dec 2025
-    #months = pd.date_range(start='2025-01-01', end='2025-12-31', freq='M')
-    #month_options = [m.strftime('%b %Y') for m in months]
-    
-    # Selectbox
-    #with col_select:
-        #selected_month_str = st.selectbox(
-            #"Pilih Bulan",
-            #month_options,
-            #index=month_options.index(default_month) if default_month in month_options else 0
-        #)
-    
-    # Plot
-    #with col_plot:
-    selected_month = pd.to_datetime(selected_month_str).strftime('%Y-%m')
-    plot_liquidity_by_month(selected_month)
-
 with tab1:
     df_sol = pd.read_excel(output, sheet_name="Solvabilitas")
     def plot_solvability_by_month(end_month_str):
@@ -372,6 +302,9 @@ with tab1:
         fig.add_annotation(xref='paper', x=1, y=100, text="100%", showarrow=False, font=dict(color="red"), yshift=10)
     
         st.plotly_chart(fig, use_container_width=True)
+    selected_month = pd.to_datetime(selected_month_str).strftime('%Y-%m')
+    plot_solvability_by_month(selected_month)
+
         
 with tab3:
     df_btl = pd.read_excel(output, sheet_name="Pembatalan")
