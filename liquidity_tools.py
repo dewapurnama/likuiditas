@@ -237,7 +237,7 @@ with tab0:
             ),
             xaxis=dict(
                 title="Bulan",
-                tickangle=-30
+                tickangle=0
             ),
             yaxis_title="Ekses/Defisit (miliar)",
             template="seaborn", showlegend=False
