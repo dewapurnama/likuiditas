@@ -215,7 +215,7 @@ with tab0:
         df_filtered = df_filtered.sort_values('Date')
     
         # 5. Create bar chart
-        fig = px.bar(
+        fig2 = px.bar(
             df_filtered,
             x='Month',
             y='Ekses/Defisit (Miliar)',
