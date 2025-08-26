@@ -290,14 +290,15 @@ with tab1:
     with col_select1:
         selected_month_str1 = st.selectbox("",
             month_options,
-            index=month_options.index(default_month) if default_month in month_options else 0, label_visibility="collapsed"
+            index=month_options.index(default_month) if default_month in month_options else 0, label_visibility="collapsed", 
+            key="month_selector_tab1"
         )
     with col_empty1:
         st.empty()
 
     # === Extract Metrics for Selected Month ===
     selected_date1 = pd.to_datetime(selected_month_str1) + MonthEnd(0)
-    row = df_lik[df_lik['Date'] == selected_date1]
+    #row = df_lik[df_lik['Date'] == selected_date1]
     
     df_sol = pd.read_excel(output, sheet_name="Solvabilitas")
     def plot_solvability_by_month(end_month_str):
