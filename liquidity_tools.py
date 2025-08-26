@@ -279,6 +279,22 @@ with tab0:
     plot_liquidity_by_month(selected_month)
     
 with tab1:
+    # === Select Month ===
+    col_select, col_empty = st.columns([1, 3])
+    today = pd.to_datetime("today").replace(day=1)
+    default_month = (today + MonthEnd(0)).strftime('%b %Y')
+
+    months = pd.date_range(start='2025-01-01', end='2025-12-31', freq='M')
+    month_options = [m.strftime('%b %Y') for m in months]
+
+    with col_select:
+        selected_month_str = st.selectbox("",
+            month_options,
+            index=month_options.index(default_month) if default_month in month_options else 0, label_visibility="collapsed"
+        )
+    with col_empty:
+        st.empty()
+
     df_sol = pd.read_excel(output, sheet_name="Solvabilitas")
     def plot_solvability_by_month(end_month_str):
         end_date = pd.to_datetime(end_month_str) + MonthEnd(0)
