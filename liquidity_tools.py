@@ -338,8 +338,7 @@ with tab1:
         return f"{val / 1e12:.2f} triliun" if val is not None else "-"
     
     # Show metrics
-    col1, col2, col3 = st.columns(3)
-
+    col1, col2, col3 = st.columns(3)  # tengah lebih besar
     with col1:
         st.metric(
             "🔥 Aset",
@@ -349,22 +348,15 @@ with tab1:
             help="Angka di atas bulan sekarang bersifat proyeksi",
             label_visibility="visible"
         )
-    
     with col2:
-        # Buat solvabilitas lebih "tinggi" dengan CSS
-        st.markdown(
-            f"""
-            <div style="padding:30px; border:1px solid #ddd; border-radius:10px; text-align:center;">
-                <h2>📊 Solvabilitas</h2>
-                <p style="font-size:40px; font-weight:bold; margin:10px 0;">{curr_sol:.2f}%</p>
-                <p style="font-size:16px; color:gray;">
-                    {calc_delta(curr_sol, prev_sol_y)} YoY || {calc_delta(curr_sol, prev_sol_m)} MoM
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
+        st.metric(
+            "📊 Solvabilitas",
+            f"{curr_sol:.2f}%" if curr_sol is not None else "-",
+            f"{calc_delta(curr_sol, prev_sol_y)} YoY || {calc_delta(curr_sol, prev_sol_m)} MoM",
+            border=True,
+            help="Angka di atas bulan sekarang bersifat proyeksi",
+            label_visibility="visible"
         )
-    
     with col3:
         st.metric(
             "🟣 Liabilitas",
@@ -374,7 +366,6 @@ with tab1:
             help="Angka di atas bulan sekarang bersifat proyeksi",
             label_visibility="visible"
         )
-
         
     def plot_solvability_by_month(end_month_str):
         end_date = pd.to_datetime(end_month_str) + MonthEnd(0)
