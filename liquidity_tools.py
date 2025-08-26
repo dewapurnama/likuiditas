@@ -302,6 +302,7 @@ with tab1:
     
     df_sol = pd.read_excel(output, sheet_name="Solvabilitas")
     df_sol['Solvabilitas'] = (df_sol['Aset'] - df_sol['Dana Kelolaan DAU']) / (df_sol['Liabilitas']+df_sol['Dana BPIH'])*100
+    df_sol['Bulan'] = pd.to_datetime(df_sol['Bulan'])
     
     # Find previous dates
     prev_month = selected_date1 - MonthEnd(1)
