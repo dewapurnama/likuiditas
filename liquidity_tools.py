@@ -301,6 +301,71 @@ with tab1:
     #row = df_lik[df_lik['Date'] == selected_date1]
     
     df_sol = pd.read_excel(output, sheet_name="Solvabilitas")
+    df_sol['Solvabilitas'] = (df_sol['Aset'] - df_sol['Dana Kelolaan DAU']) / (df_sol['Liabilitas']+df_sol['Dana BPIH'])*100
+    
+    # Find previous dates
+    prev_month = selected_date - MonthEnd(1)
+    prev_year = selected_date - pd.DateOffset(years=1)
+    prev_year = prev_year + MonthEnd(0)  # Normalize to EOM
+
+    # Get current & previous values
+    def get_val(col, date):
+        val = df_sol[df_sol['Bulan'] == date][col]
+        return val.values[0] if not val.empty and pd.notnull(val.values[0]) else None
+    
+    # Current values
+    curr_ass = get_val('Aset', selected_date)
+    curr_sol = get_val('Solvabilitas', selected_date)
+    curr_liab = get_val('Liabilitas', selected_date)
+    
+    # Previous values
+    prev_ass_m = get_val('Aset', prev_month)
+    prev_ass_y = get_val('Aset', prev_year)
+    prev_sol_m = get_val('Solvabilitas', prev_month)
+    prev_sol_y = get_val('Solvabilitas', prev_year)
+    prev_liab_m = get_val('Liabilitas', prev_month)
+    prev_liab_y = get_val('Liabilitas', prev_year)
+    
+    # Format delta
+    def calc_delta(curr, prev):
+        if curr is None or prev is None or prev == 0:
+            return "-"
+        return f"{(curr - prev) / prev * 100:.2f}%"
+    
+    # Format trillions
+    def format_tril(val):
+        return f"{val / 1e12:.2f} triliun" if val is not None else "-"
+    
+    # Show metrics
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric(
+            "🔥 Aset",
+            format_tril(curr_ass),
+            f"{calc_delta(curr_ass, prev_ass_y)} YoY || {calc_delta(curr_ass, prev_ass_m)} MoM",
+            border=True,
+            help="Angka di atas bulan sekarang bersifat proyeksi",
+            label_visibility="visible"
+        )
+    with col2:
+        st.metric(
+            "📊 Solvabilitas",
+            f"{curr_sol:.2f}%" if curr_sol is not None else "-",
+            f"{calc_delta(curr_sol, prev_sol_y)} YoY || {calc_delta(curr_sol, prev_sol_m)} MoM",
+            border=True,
+            help="Angka di atas bulan sekarang bersifat proyeksi",
+            label_visibility="visible"
+        )
+    with col3:
+        st.metric(
+            "🟣 Liabilitas",
+            format_tril(curr_liab),
+            f"{calc_delta(curr_liab, prev_liab_y)} YoY || {calc_delta(curr_liab, prev_liab_m)} MoM",
+            border=True,
+            help="Angka di atas bulan sekarang bersifat proyeksi",
+            label_visibility="visible"
+        )
+        
     def plot_solvability_by_month(end_month_str):
         end_date = pd.to_datetime(end_month_str) + MonthEnd(0)
         start_date = end_date - pd.DateOffset(months=13) + pd.offsets.MonthBegin(0)
