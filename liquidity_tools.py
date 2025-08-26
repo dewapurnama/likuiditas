@@ -295,6 +295,10 @@ with tab1:
     with col_empty:
         st.empty()
 
+    # === Extract Metrics for Selected Month ===
+    selected_date = pd.to_datetime(selected_month_str) + MonthEnd(0)
+    row = df_lik[df_lik['Date'] == selected_date]
+    
     df_sol = pd.read_excel(output, sheet_name="Solvabilitas")
     def plot_solvability_by_month(end_month_str):
         end_date = pd.to_datetime(end_month_str) + MonthEnd(0)
