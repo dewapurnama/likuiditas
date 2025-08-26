@@ -304,8 +304,8 @@ with tab1:
     df_sol['Solvabilitas'] = (df_sol['Aset'] - df_sol['Dana Kelolaan DAU']) / (df_sol['Liabilitas']+df_sol['Dana BPIH'])*100
     
     # Find previous dates
-    prev_month = selected_date - MonthEnd(1)
-    prev_year = selected_date - pd.DateOffset(years=1)
+    prev_month = selected_date1 - MonthEnd(1)
+    prev_year = selected_date1 - pd.DateOffset(years=1)
     prev_year = prev_year + MonthEnd(0)  # Normalize to EOM
 
     # Get current & previous values
@@ -314,9 +314,9 @@ with tab1:
         return val.values[0] if not val.empty and pd.notnull(val.values[0]) else None
     
     # Current values
-    curr_ass = get_val('Aset', selected_date)
-    curr_sol = get_val('Solvabilitas', selected_date)
-    curr_liab = get_val('Liabilitas', selected_date)
+    curr_ass = get_val('Aset', selected_date1)
+    curr_sol = get_val('Solvabilitas', selected_date1)
+    curr_liab = get_val('Liabilitas', selected_date1)
     
     # Previous values
     prev_ass_m = get_val('Aset', prev_month)
