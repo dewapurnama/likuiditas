@@ -280,24 +280,24 @@ with tab0:
     
 with tab1:
     # === Select Month ===
-    col_select, col_empty = st.columns([1, 3])
+    col_select1, col_empty1 = st.columns([1, 3])
     today = pd.to_datetime("today").replace(day=1)
     default_month = (today + MonthEnd(0)).strftime('%b %Y')
 
     months = pd.date_range(start='2025-01-01', end='2025-12-31', freq='M')
     month_options = [m.strftime('%b %Y') for m in months]
 
-    with col_select:
-        selected_month_str = st.selectbox("",
+    with col_select1:
+        selected_month_str1 = st.selectbox("",
             month_options,
             index=month_options.index(default_month) if default_month in month_options else 0, label_visibility="collapsed"
         )
-    with col_empty:
+    with col_empty1:
         st.empty()
 
     # === Extract Metrics for Selected Month ===
-    selected_date = pd.to_datetime(selected_month_str) + MonthEnd(0)
-    row = df_lik[df_lik['Date'] == selected_date]
+    selected_date1 = pd.to_datetime(selected_month_str1) + MonthEnd(0)
+    row = df_lik[df_lik['Date'] == selected_date1]
     
     df_sol = pd.read_excel(output, sheet_name="Solvabilitas")
     def plot_solvability_by_month(end_month_str):
@@ -322,8 +322,8 @@ with tab1:
         fig.add_annotation(xref='paper', x=1, y=100, text="100%", showarrow=False, font=dict(color="red"), yshift=10)
     
         st.plotly_chart(fig, use_container_width=True)
-    selected_month = pd.to_datetime(selected_month_str).strftime('%Y-%m')
-    plot_solvability_by_month(selected_month)
+    selected_month1 = pd.to_datetime(selected_month_str1).strftime('%Y-%m')
+    plot_solvability_by_month(selected_month1)
 
         
 with tab3:
