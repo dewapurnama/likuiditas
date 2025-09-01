@@ -9,7 +9,7 @@ from sklearn.linear_model import LinearRegression
 
 st.set_page_config(layout="wide")
 
-tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs(["Likuiditas Wajib", "Solvabilitas", "Proyeksi LCR", "Maturity Profile", "Liquidity Gap", "Data"])
+tab0, tab1, tab2, tab3, tab4 = st.tabs(["Likuiditas Wajib", "Solvabilitas", "Maturity Profile & Liquidity Gap", "Proyeksi LCR", "Data"])
 
 # Download the file
 url = 'https://drive.google.com/uc?id=16O_hbQ167m9Pnhj84T1IMXvW0hJaeoGf'
@@ -26,7 +26,7 @@ with tab0:
     df_pnp = pd.read_excel(output, sheet_name="Penempatan")
     df_bpih = pd.read_excel(output, sheet_name="BPIH")
 
-with tab5:
+with tab4:
     st.write("Update Data Investasi:")
     edited_data_inv = st.data_editor(
         df_inv,
@@ -407,7 +407,7 @@ with tab1:
     plot_solvability_by_month(selected_month1)
 
         
-with tab3:
+with tab2:
     df_btl = pd.read_excel(output, sheet_name="Pembatalan")
     df_berangkat = pd.read_excel(output, sheet_name="Keberangkatan")
     
