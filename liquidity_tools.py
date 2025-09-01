@@ -412,7 +412,10 @@ with tab1:
     selected_month1 = pd.to_datetime(selected_month_str1).strftime('%Y-%m')
     plot_solvability_by_month(selected_month1)
 
-        
+tab2.markdown(
+    "<h1 style='font-size:25px;'>📊 Maturity Profile & Liquidity Gap Dana Haji</h1>",
+    unsafe_allow_html=True
+)  
 with tab2:
     df_btl = pd.read_excel(output, sheet_name="Pembatalan")
     df_berangkat = pd.read_excel(output, sheet_name="Keberangkatan")
