@@ -288,7 +288,7 @@ with tab1:
     with col_select1:
         selected_month_str1 = st.selectbox("Pilih bulan",
             month_options,
-            index=month_options.index(default_month) if default_month in month_options else 0, label_visibility="collapsed", 
+            index=month_options.index(default_month) if default_month in month_options else 0, 
             key="month_selector_tab1"
         )
     with col_empty1:
