@@ -159,7 +159,7 @@ with tab0:
             "🔥 Likuiditas Wajib",
             f"{curr_liq:.2f}x BPIH" if curr_liq is not None else "-",
             f"{calc_delta(curr_liq, prev_liq_y)} YoY || {calc_delta(curr_liq, prev_liq_m)} MoM",
-            border=True
+            border=True, help = "Dihitung dari (Penempatan PIH Reguler + Investasi Jangka Pendek + Emas)/BPIH", label_visibility="visible"
         )
     with col2:
         st.metric(
