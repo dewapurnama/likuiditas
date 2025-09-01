@@ -271,7 +271,11 @@ with tab0:
     #with col_plot:
     selected_month = pd.to_datetime(selected_month_str).strftime('%Y-%m')
     plot_liquidity_by_month(selected_month)
-    
+
+tab1.markdown(
+        "<h1 style='font-size:25px;'>📊 Rasio Solvabiltas BPKH</h1>",
+        unsafe_allow_html=True
+    )
 with tab1:
     # === Select Month ===
     col_select1, col_empty1 = st.columns([1, 3])
@@ -282,7 +286,7 @@ with tab1:
     month_options = [m.strftime('%b %Y') for m in months]
 
     with col_select1:
-        selected_month_str1 = st.selectbox("",
+        selected_month_str1 = st.selectbox("Pilih bulan",
             month_options,
             index=month_options.index(default_month) if default_month in month_options else 0, label_visibility="collapsed", 
             key="month_selector_tab1"
@@ -345,7 +349,7 @@ with tab1:
             f"{curr_sol:.2f}%" if curr_sol is not None else "-",
             f"{calc_delta(curr_sol, prev_sol_y)} YoY || {calc_delta(curr_sol, prev_sol_m)} MoM",
             border=True,
-            help="Angka di atas bulan sekarang bersifat proyeksi",
+            help="Dihitung dari (Aset - Dana Kelolaan DAU)/(Liabilitas + Dana BPIH)",
             label_visibility="visible"
         )
     with col2:
