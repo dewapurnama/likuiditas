@@ -312,6 +312,8 @@ with tab1:
     curr_ass = get_val('Aset', selected_date1)
     curr_sol = get_val('Solvabilitas', selected_date1)
     curr_liab = get_val('Liabilitas', selected_date1)
+    curr_dau = get_val('Dana Kelolaan DAU', selected_date1)
+    curr_bpih = get_val('Dana BPIH', selected_date1)
     
     # Previous values
     prev_ass_m = get_val('Aset', prev_month)
@@ -320,6 +322,10 @@ with tab1:
     prev_sol_y = get_val('Solvabilitas', prev_year)
     prev_liab_m = get_val('Liabilitas', prev_month)
     prev_liab_y = get_val('Liabilitas', prev_year)
+    prev_dau_m = get_val('Dana Kelolaan DAU', prev_month)
+    prev_dau_y = get_val('Dana Kelolaan DAU', prev_year)
+    prev_bpih_m = get_val('Dana BPIH', prev_month)
+    prev_bpih_y = get_val('Dana BPIH', prev_year)
     
     # Format delta
     def calc_delta(curr, prev):
@@ -332,17 +338,8 @@ with tab1:
         return f"{val / 1e12:.2f} triliun" if val is not None else "-"
     
     # Show metrics
-    col1, col2, col3 = st.columns(3)  # tengah lebih besar
+    col1, col2, col3, col4, col5 = st.columns(5)  
     with col1:
-        st.metric(
-            "🔥 Aset",
-            format_tril(curr_ass),
-            f"{calc_delta(curr_ass, prev_ass_y)} YoY || {calc_delta(curr_ass, prev_ass_m)} MoM",
-            border=True,
-            help="Angka di atas bulan sekarang bersifat proyeksi",
-            label_visibility="visible"
-        )
-    with col2:
         st.metric(
             "📊 Solvabilitas",
             f"{curr_sol:.2f}%" if curr_sol is not None else "-",
@@ -351,14 +348,33 @@ with tab1:
             help="Angka di atas bulan sekarang bersifat proyeksi",
             label_visibility="visible"
         )
+    with col2:
+        st.metric(
+            "🔥 Aset",
+            format_tril(curr_ass),
+            f"{calc_delta(curr_ass, prev_ass_y)} YoY || {calc_delta(curr_ass, prev_ass_m)} MoM",
+            border=True
+        )
     with col3:
         st.metric(
             "🟣 Liabilitas",
             format_tril(curr_liab),
             f"{calc_delta(curr_liab, prev_liab_y)} YoY || {calc_delta(curr_liab, prev_liab_m)} MoM",
-            border=True,
-            help="Angka di atas bulan sekarang bersifat proyeksi",
-            label_visibility="visible"
+            border=True
+        )
+    with col4:
+        st.metric(
+            "📍 Dana Kelolaan DAU",
+            format_tril(curr_dau),
+            f"{calc_delta(curr_dau, prev_dau_y)} YoY || {calc_delta(curr_dau, prev_dau_m)} MoM",
+            border=True
+        )
+    with col5:
+        st.metric(
+            "📍 Dana BPIH",
+            format_tril(curr_bpih),
+            f"{calc_delta(curr_bpih, prev_bpih_y)} YoY || {calc_delta(curr_bpih, prev_bpih_m)} MoM",
+            border=True
         )
         
     def plot_solvability_by_month(end_month_str):
