@@ -100,7 +100,8 @@ with tab0:
     with col_select:
         selected_month_str = st.selectbox("",
             month_options,
-            index=month_options.index(default_month) if default_month in month_options else 0, label_visibility="collapsed"
+            index=month_options.index(default_month) if default_month in month_options else 0, help="Angka di atas bulan sekarang bersifat proyeksi",
+            label_visibility="visible"
         )
     with col_empty:
         st.empty()
