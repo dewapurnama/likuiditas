@@ -26,8 +26,12 @@ with tab0:
     df_pnp = pd.read_excel(output, sheet_name="Penempatan")
     df_bpih = pd.read_excel(output, sheet_name="BPIH")
 
+tab0.markdown(
+    "<h1 style='font-size:25px;'>📊 Data Likuiditas Wajib BPKH</h1>",
+    unsafe_allow_html=True
+)
 with tab4:
-    st.write("Update Data Investasi:")
+    st.write("Data Investasi:")
     edited_data_inv = st.data_editor(
         df_inv,
         use_container_width=True,
@@ -41,19 +45,21 @@ with tab4:
         }
     )
 
-    st.write("Update Data Penempatan:")
-    edited_data_pnp = st.data_editor(
-        df_pnp,
-        use_container_width=True,
-        num_rows="dynamic",
-    )
-
-    st.write("Update Data BPIH:")
-    edited_data_bpih = st.data_editor(
-        df_bpih,
-        use_container_width=True,
-        num_rows="dynamic",
-    )
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write("Data Penempatan:")
+        edited_data_pnp = st.data_editor(
+            df_pnp,
+            use_container_width=True,
+            num_rows="dynamic",
+        )
+    with col2:
+        st.write("Data BPIH:")
+        edited_data_bpih = st.data_editor(
+            df_bpih,
+            use_container_width=True,
+            num_rows="dynamic",
+        )
     
 with tab0:
     # === Prepare Data ===
