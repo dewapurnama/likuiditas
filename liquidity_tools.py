@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 from pandas.tseries.offsets import MonthEnd
 import gdown
 import numpy as np
