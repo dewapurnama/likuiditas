@@ -727,6 +727,10 @@ with tab3:
         st.plotly_chart(fig, use_container_width=True)
 
         # --- Format + Order Fixes ---
+        df_matprof['gap_reg']=df_matprof['asset_reg']-df_matprof['liab_reg']
+        df_matprof['cumulative_reg'] = df_matprof['gap_reg'].cumsum()
+        df_matprof['gap_khs']=df_matprof['asset_khs']-df_matprof['liab_khs']
+        df_matprof['cumulative_khs'] = df_matprof['gap_khs'].cumsum()
         df_plot = df_matprof.copy()
         df_plot['gap_reg'] = df_plot['gap_reg'] / 1_000_000_000_000
         df_plot['cumulative_reg'] = df_plot['cumulative_reg'] / 1_000_000_000_000
