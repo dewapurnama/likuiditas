@@ -872,13 +872,108 @@ with tab3:
             legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='center', x=0.5)
         )
         st.plotly_chart(fig, use_container_width=True)
+
+    # --- Format + Order Fixes ---
+    df_plot = df_matprof.copy()
+    df_plot['gap_khs'] = df_plot['gap_khs'] / 1_000_000
+    df_plot['cumulative_khs'] = df_plot['cumulative_khs'] / 1_000_000
+    # ---- Step 2.5: Remove rows where both asset and liability are zero ----
+    df_plot = df_plot[~((df_plot['asset_khs'] == 0) & (df_plot['liab_khs'] == 0))].copy()
     
-    st.write("Update Matprof:")
-    edited_data_pnp = st.data_editor(
-        df_matprof,
-        use_container_width=True,
-        num_rows="dynamic",
+    # Format bucket
+    def format_bucket(bucket):
+        if '>' in bucket:
+            num = int(bucket.replace('>','').replace(' mo',''))
+            return f'> Year {num // 12}'
+        elif 'year' in bucket.lower():
+            return bucket
+        elif 'mo' in bucket.lower():
+            num = int(bucket.replace(' mo',''))
+            return f'{num} Mo' if num < 12 else f'Year {num // 12}'
+        return bucket
+    
+    df_plot['waktu'] = df_plot['waktu'].apply(format_bucket)
+    
+    # Set correct order
+    bucket_order = ['1 Mo', '3 Mo', '6 Mo', 'Year 1', 'Year 2', 'Year 3', 'Year 4',
+                    'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', '> Year 10']
+    df_plot['waktu'] = pd.Categorical(df_plot['waktu'], categories=bucket_order, ordered=True)
+    df_plot = df_plot.sort_values('waktu')
+    
+    # Color logic
+    bar_colors = df_plot['gap_khs'].apply(
+        lambda x: 'rgb(31, 78, 121)' if x >= 0 else 'rgb(192, 0, 0)'
     )
+    
+    # === Plot ===
+    fig1 = go.Figure()
+    
+    # ✅ 1. Cumulative Gap: filled area on y-axis
+    fig1.add_trace(go.Scatter(
+        x=df_plot['waktu'],
+        y=df_plot['cumulative_khs'],
+        name='Cumulative Gap',
+        fill='tozeroy',
+        mode='lines',
+        line=dict(width=0),
+        fillcolor='rgba(255, 193, 7, 0.4)',  # yellow
+        hoverinfo='y',
+        yaxis='y'
+    ))
+    
+    # ✅ 2. Liquidity Gap bars: use y2 so they’re on top
+    fig1.add_trace(go.Bar(
+        x=df_plot['waktu'],
+        y=df_plot['gap_khs'],
+        name='Gap',
+        marker=dict(color=bar_colors),
+        text=df_plot['gap_khs'].round(1),
+        textposition='outside',
+        yaxis='y2'
+    ))
+    
+    
+    # Calculate global y range
+    ymin = min(df_plot['gap_khs'].min(), df_plot['cumulative_khs'].min())
+    ymax = max(df_plot['gap_khs'].max(), df_plot['cumulative_khs'].max())
+    
+    # Update layout with synced axis
+    fig1.update_layout(
+        title='Liquidity Gap Dana PIH Reguler',
+        xaxis=dict(title='Maturity Bucket'),
+        yaxis=dict(
+            title='Nominal (T)',
+            showgrid=False,
+            zeroline=True,
+            range=[ymin - 25, ymax + 25]  # adjust padding if needed
+        ),
+        yaxis2=dict(
+            overlaying='y',
+            side='left',
+            showticklabels=False,
+            showgrid=False,
+            range=[ymin - 25, ymax + 25]  # force same scale
+        ),
+        barmode='overlay',
+        bargap=0.3,
+        template='plotly_white',
+        legend_title_text='',
+        legend=dict(
+            orientation='h',
+            yanchor='bottom',
+            y=1.02,
+            xanchor='center',
+            x=0.5
+        )
+    )
+    st.plotly_chart(fig1, use_container_width=True)
+    
+    #st.write("Update Matprof:")
+    #edited_data_pnp = st.data_editor(
+        #df_matprof,
+        #use_container_width=True,
+        #num_rows="dynamic",
+    #)
 
 # Download the file
 #url = 'https://drive.google.com/uc?id=1jrbBbdiYlYUM3wF2-9r1MpMoBFcBRPgZ'
