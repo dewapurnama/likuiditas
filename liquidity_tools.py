@@ -26,7 +26,7 @@ with tab0:
     df_pnp = pd.read_excel(output, sheet_name="Penempatan")
     df_bpih = pd.read_excel(output, sheet_name="BPIH")
 
-tab0.markdown(
+tab4.markdown(
     "<h1 style='font-size:25px;'>📊 Data Likuiditas Wajib BPKH</h1>",
     unsafe_allow_html=True
 )
