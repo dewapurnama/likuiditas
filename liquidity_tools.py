@@ -961,7 +961,7 @@ with tab2:
         
         # Update layout with synced axis
         fig1.update_layout(
-            title='Liquidity Gap Dana PIH Reguler',
+            title='Liquidity Gap Dana PIH Khusus',
             xaxis=dict(title='Maturity Bucket'),
             yaxis=dict(
                 title='Nominal (T)',
